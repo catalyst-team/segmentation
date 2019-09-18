@@ -17,7 +17,7 @@ class ToTensor(albu.core.transforms_interface.DualTransform):
     def __call__(self, force_apply=True, **kwargs):
         kwargs.update(image=tensor_from_rgb_image(kwargs["image"]))
         if "mask" in kwargs.keys():
-            kwargs.update(mask=tensor_from_rgb_image(kwargs["mask"] / 255.0))
+            kwargs.update(mask=tensor_from_rgb_image(kwargs["mask"]).float())
 
         return kwargs
 

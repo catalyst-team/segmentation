@@ -1,12 +1,12 @@
 import collections
 import json
 
-from catalyst.data.dataset import ListDataset
-from catalyst.data.reader import ImageReader, ReaderCompose
+from catalyst.data import ImageReader, LambdaReader, ListDataset, ReaderCompose
 from catalyst.dl import ConfigExperiment
 from catalyst.utils.pandas import read_csv_data
 import torch.nn as nn
 
+from .data import read_mask
 from .transforms import Compose, hard_transform, post_transforms, \
     pre_transforms
 
@@ -89,15 +89,15 @@ class Experiment(ConfigExperiment):
 
         open_fn = ReaderCompose(readers=[
             ImageReader(
-                input_key="sample",
+                input_key="images",
                 output_key="image",
                 datapath=datapath
             ),
-            ImageReader(
-                input_key="mask",
+            LambdaReader(
+                input_key="masks",
                 output_key="mask",
-                datapath=datapath,
-                grayscale=True
+                encode_fn=read_mask,
+                rootpath=datapath
             ),
         ])
 
