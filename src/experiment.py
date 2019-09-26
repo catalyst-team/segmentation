@@ -1,10 +1,12 @@
 import collections
 import json
 
+import torch
+import torch.nn as nn
+
 from catalyst.data import ImageReader, LambdaReader, ListDataset, ReaderCompose
 from catalyst.dl import ConfigExperiment
 from catalyst.utils.pandas import read_csv_data
-import torch.nn as nn
 
 from .data import read_mask
 from .transforms import Compose, hard_transform, post_transforms, \
@@ -14,7 +16,7 @@ from .transforms import Compose, hard_transform, post_transforms, \
 class Experiment(ConfigExperiment):
     def _postprocess_model_for_stage(self, stage: str, model: nn.Module):
         model_ = model
-        if isinstance(model, nn.DataParallel):
+        if isinstance(model, torch.nn.DataParallel):
             model_ = model_.module
 
         if stage in ["debug", "stage1"]:
@@ -27,17 +29,15 @@ class Experiment(ConfigExperiment):
 
     @staticmethod
     def get_transforms(
-        stage: str = None,
-        mode: str = None,
-        image_size: int = 256
+        stage: str = None, mode: str = None, image_size: int = 256
     ):
         pre_transform_fn = pre_transforms(image_size=image_size)
 
         if mode == "train":
-            post_transform_fn = Compose(
-                [hard_transform(image_size=image_size),
-                 post_transforms()]
-            )
+            post_transform_fn = Compose([
+                hard_transform(image_size=image_size),
+                post_transforms()
+            ])
         elif mode in ["valid", "infer"]:
             post_transform_fn = post_transforms()
         else:
@@ -66,12 +66,12 @@ class Experiment(ConfigExperiment):
         tag_column: str = None,
         folds_seed: int = 42,
         n_folds: int = 5,
-        image_size: int = 256
+        image_size: int = 256,
     ):
         datasets = collections.OrderedDict()
-        tag2class = json.load(open(tag2class)) \
-            if tag2class is not None \
-            else None
+        tag2class = (
+            json.load(open(tag2class)) if tag2class is not None else None
+        )
 
         df, df_train, df_valid, df_infer = read_csv_data(
             in_csv=in_csv,
@@ -84,7 +84,7 @@ class Experiment(ConfigExperiment):
             class_column=class_column,
             tag_column=tag_column,
             seed=folds_seed,
-            n_folds=n_folds
+            n_folds=n_folds,
         )
 
         open_fn = ReaderCompose(readers=[
@@ -109,10 +109,8 @@ class Experiment(ConfigExperiment):
                     list_data=source,
                     open_fn=open_fn,
                     dict_transform=self.get_transforms(
-                        stage=stage,
-                        mode=mode,
-                        image_size=image_size
-                    )
+                        stage=stage, mode=mode, image_size=image_size
+                    ),
                 )
                 datasets[mode] = dataset
 

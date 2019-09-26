@@ -1,11 +1,13 @@
+import cv2
+
 import albumentations as albu
 from albumentations import (
     ChannelShuffle, CLAHE, Compose, HueSaturationValue, IAAPerspective,
     JpegCompression, LongestMaxSize, Normalize, OneOf, PadIfNeeded,
     RandomBrightnessContrast, RandomGamma, RGBShift, ShiftScaleRotate, ToGray
 )
+
 from catalyst.utils import tensor_from_rgb_image
-import cv2
 
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
@@ -44,7 +46,7 @@ def hard_transform(image_size=256, p=0.5):
             scale_limit=0.1,
             rotate_limit=15,
             border_mode=cv2.BORDER_REFLECT,
-            p=p
+            p=p,
         ),
         IAAPerspective(scale=(0.02, 0.05), p=p),
         OneOf(
