@@ -1,0 +1,65 @@
+pilmode: RGB
+mapping:
+  background:
+    label: 0
+    color: [0, 0, 0]
+  aeroplane:
+    label: 1
+    color: [128, 0, 0]
+  bicycle:
+    label: 2
+    color: [0, 128, 0]
+  bird:
+    label: 3
+    color: [128, 128, 0]
+  boat:
+    label: 4
+    color: [0, 0, 128]
+  bottle:
+    label: 5
+    color: [128, 0, 128]
+  bus:
+    label: 6
+    color: [0, 128, 128]
+  car:
+    label: 7
+    color: [128, 128, 128]
+  cat:
+    label: 8
+    color: [64, 0, 0]
+  chair:
+    label: 9
+    color: [192, 0, 0]
+  cow:
+    label: 10
+    color: [64, 128, 0]
+  dining table:
+    label: 11
+    color: 192, 128, 0
+  dog:
+    label: 12
+    color: 64, 0, 128
+  horse:
+    label: 13
+    color: [192, 0, 128]
+  motorbike:
+    label: 14
+    color: 64, 128, 128
+  person:
+    label: 15
+    color: [192, 128, 128]
+  potted plant:
+    label: 16
+    color: [0, 64, 0]
+  sheep:
+    label: 17
+    color: [128, 64, 0]
+  sofa:
+    label: 18
+    color: [0, 192, 0]
+  train:
+    label: 19
+    color: [128, 192, 0]
+  tv/monitor:
+    label: 20
+    color: [0, 64, 128]
