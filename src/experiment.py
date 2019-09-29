@@ -1,5 +1,6 @@
 import collections
 import json
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -7,10 +8,11 @@ import torch.nn as nn
 from catalyst.data import ImageReader, LambdaReader, ListDataset, ReaderCompose
 from catalyst.dl import ConfigExperiment
 from catalyst.utils.pandas import read_csv_data
+from pytorch_toolbelt.utils.fs import id_from_fname
 
-from .data import read_mask
 from .transforms import Compose, hard_transform, post_transforms, \
     pre_transforms
+from .utils import maskread
 
 
 class Experiment(ConfigExperiment):
@@ -46,6 +48,9 @@ class Experiment(ConfigExperiment):
         transform_fn = Compose([pre_transform_fn, post_transform_fn])
 
         def process(dict_):
+            # cast to `float` prevent internal mask scaling in albumentations
+            dict_["mask"] = dict_["mask"].astype(np.float32)
+
             result = transform_fn(**dict_)
             return result
 
@@ -66,7 +71,7 @@ class Experiment(ConfigExperiment):
         tag_column: str = None,
         folds_seed: int = 42,
         n_folds: int = 5,
-        image_size: int = 256,
+        image_size: int = 256
     ):
         datasets = collections.OrderedDict()
         tag2class = (
@@ -84,7 +89,7 @@ class Experiment(ConfigExperiment):
             class_column=class_column,
             tag_column=tag_column,
             seed=folds_seed,
-            n_folds=n_folds,
+            n_folds=n_folds
         )
 
         open_fn = ReaderCompose(readers=[
@@ -96,8 +101,13 @@ class Experiment(ConfigExperiment):
             LambdaReader(
                 input_key="masks",
                 output_key="mask",
-                encode_fn=read_mask,
+                encode_fn=maskread,
                 rootpath=datapath
+            ),
+            LambdaReader(
+                input_key="images",
+                output_key="name",
+                encode_fn=id_from_fname
             ),
         ])
 
