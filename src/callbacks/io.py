@@ -14,6 +14,7 @@ class OriginalImageSaverCallback(Callback):
         self,
         output_dir: str,
         relative: bool = True,
+        filename_suffix: str = "",
         filename_extension: str = ".jpg",
         input_key: str = "image",
         outpath_key: str = "name"
@@ -21,6 +22,7 @@ class OriginalImageSaverCallback(Callback):
         super().__init__(CallbackOrder.Other)
         self.output_dir = Path(output_dir)
         self.relative = relative
+        self.filename_suffix = filename_suffix
         self.filename_extension = filename_extension
         self.input_key = input_key
         self.outpath_key = outpath_key
@@ -43,7 +45,8 @@ class OriginalImageSaverCallback(Callback):
         images = tensor_to_ndimage(images, dtype=np.uint8)
 
         for image, name in zip(images, names):
-            imageio.imwrite(self.get_image_path(state, name), image)
+            fname = self.get_image_path(state, name, self.filename_suffix)
+            imageio.imwrite(fname, image)
 
 
 class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
@@ -52,6 +55,7 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
         output_dir: str,
         relative: bool = True,
         mask_strength: float = 0.5,
+        filename_suffix: str = "",
         filename_extension: str = ".jpg",
         input_key: str = "image",
         output_key: str = "mask",
@@ -60,6 +64,7 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
         super().__init__(
             output_dir=output_dir,
             relative=relative,
+            filename_suffix=filename_suffix,
             filename_extension=filename_extension,
             input_key=input_key,
             outpath_key=outpath_key
@@ -74,13 +79,14 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
 
         for name, image, mask in zip(names, images, masks):
             image = mask_to_overlay_image(image, mask, self.mask_strength)
-            imageio.imwrite(self.get_image_path(state, name), image)
+            fname = self.get_image_path(state, name, self.filename_suffix)
+            imageio.imwrite(fname, image)
 
 
 class InstanceCropSaverCallback(OriginalImageSaverCallback):
     def __init__(
         self,
-        output_dir: Path,
+        output_dir: str,
         relative: bool = True,
         filename_extension: str = ".jpg",
         input_key: str = "image",
