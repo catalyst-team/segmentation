@@ -6,8 +6,8 @@ model_params:
 
 args:
   expdir: "src"
-  logdir: &logdir "./logs/segmentation"
-  # baselogdir: "./logs/segmentation_base"
+  logdir: &logdir "./logs/binary_segmentation"
+  # baselogdir: "./logs/binary_segmentation_base"
 
 stages:
 
@@ -131,7 +131,12 @@ stages:
     callbacks_params:
       loader:
         callback: CheckpointCallback
-      infer:
-        callback: InferCallback
-        out_dir: *logdir
-        out_prefix: "/predictions/"
+
+      raw_processor:
+        callback: RawMaskPostprocessingCallback
+
+      saver_mask:
+        callback: OverlayMaskImageSaverCallback
+        output_dir: infer
+        filename_suffix: _01_raw_mask
+        output_key: mask
