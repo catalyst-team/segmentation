@@ -7,20 +7,15 @@ from pytorch_toolbelt.utils.fs import id_from_fname
 import safitty
 from tqdm import tqdm
 
-from catalyst.utils import mimwrite_with_meta
+from catalyst.utils import boolean_flag, mimwrite_with_meta
 
 
 def build_args(parser):
     parser.add_argument("--in-dir", type=str, required=True)
     parser.add_argument("--out-dir", type=str, required=True)
     parser.add_argument("--config", type=str, required=True)
-    parser.add_argument(
-        "--verbose",
-        dest="verbose",
-        action="store_true",
-        default=False,
-        help="Print additional information"
-    )
+    boolean_flag(parser, "verbose", default=False)
+
     return parser
 
 

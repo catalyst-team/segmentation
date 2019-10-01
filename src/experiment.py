@@ -5,10 +5,10 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from catalyst.data import ImageReader, LambdaReader, ListDataset, ReaderCompose
+from catalyst.data import ImageReader, LambdaReader, ListDataset, \
+    ReaderCompose, ScalarReader
 from catalyst.dl import ConfigExperiment
 from catalyst.utils.pandas import read_csv_data
-from pytorch_toolbelt.utils.fs import id_from_fname
 
 from .transforms import Compose, hard_transform, post_transforms, \
     pre_transforms
@@ -104,11 +104,12 @@ class Experiment(ConfigExperiment):
                 encode_fn=maskread,
                 rootpath=datapath
             ),
-            LambdaReader(
-                input_key="images",
+            ScalarReader(
+                input_key="name",
                 output_key="name",
-                encode_fn=id_from_fname
-            ),
+                default_value=-1,
+                dtype=str
+            )
         ])
 
         for mode, source in zip(

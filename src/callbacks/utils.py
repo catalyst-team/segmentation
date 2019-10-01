@@ -45,7 +45,7 @@ def label_instances(
             mode="bilinear",
             align_corners=False,
         )
-        .cpu()
+        .data.cpu()
         .squeeze(-3)
         .numpy()
     )
@@ -57,7 +57,7 @@ def label_instances(
             mode="bilinear",
             align_corners=False,
         )
-        .cpu()
+        .data.cpu()
         .squeeze(-3)
         .numpy()
     )
@@ -185,9 +185,7 @@ def crop_by_masks(
 
 
 def mask_to_overlay_image(
-    image: np.ndarray,
-    mask: np.ndarray,
-    mask_strength: float
+    image: np.ndarray, mask: np.ndarray, mask_strength: float
 ) -> np.ndarray:
     mask = label2rgb(mask, bg_label=0)
     image_with_overlay = image * (1 - mask_strength) + mask * mask_strength
