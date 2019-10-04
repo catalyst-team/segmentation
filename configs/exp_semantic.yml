@@ -136,6 +136,9 @@ stages:
         callback: RawMaskPostprocessingCallback
         output_key: semantic_mask
 
+      image_saver:
+        callback: OriginalImageSaverCallback
+        output_dir: infer
       saver_semantic:
         callback: OverlayMaskImageSaverCallback
         output_dir: infer

@@ -135,6 +135,9 @@ stages:
       raw_processor:
         callback: RawMaskPostprocessingCallback
 
+      image_saver:
+        callback: OriginalImageSaverCallback
+        output_dir: infer
       saver_mask:
         callback: OverlayMaskImageSaverCallback
         output_dir: infer

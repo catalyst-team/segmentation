@@ -142,6 +142,9 @@ stages:
         out_key_semantic: semantic_mask
         out_key_border: border_mask
 
+      image_saver:
+        callback: OriginalImageSaverCallback
+        output_dir: infer
       saver_mask:
         callback: OverlayMaskImageSaverCallback
         output_dir: infer
