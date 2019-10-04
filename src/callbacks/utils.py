@@ -16,12 +16,36 @@ Point = Tuple[int, int]
 Quadrangle = Tuple[Point, Point, Point, Point]
 
 
+def encode_mask_with_color(
+    semantic_masks: torch.Tensor, threshold: float = 0.5
+) -> List[np.ndarray]:
+    """
+
+    Args:
+        semantic_masks: semantic mask batch tensor
+        threshold: threshold for semantic masks
+    Returns:
+        List of semantic masks
+
+    """
+    batch = []
+    for observation in semantic_masks:
+        result = np.zeros_like(observation[0], dtype=np.int32)
+        for i, ch in enumerate(observation, start=1):
+            result[ch >= threshold] = i
+
+        batch.append(result)
+
+    return batch
+
+
 def label_instances(
     semantic_masks: torch.Tensor,
     border_masks: torch.Tensor,
-    watershed_threshold=0.9,
-    instance_mask_threshold=0.5,
-    downscale_factor=4
+    watershed_threshold: float = 0.9,
+    instance_mask_threshold: float = 0.5,
+    downscale_factor: float = 4,
+    interpolation: str = "bilinear"
 ) -> List[np.ndarray]:
     """
 
@@ -31,6 +55,7 @@ def label_instances(
         watershed_threshold: threshold for watershed markers
         instance_mask_threshold: threshold for final instance masks
         downscale_factor: mask downscaling factor (to speed up processing)
+        interpolation: interpolation method
     Returns:
         List of labeled instance masks, one per batch item
 
@@ -38,40 +63,28 @@ def label_instances(
     bordered_masks = (semantic_masks - border_masks).clamp(min=0)
 
     scaling = 1 / downscale_factor
-    semantic_masks = (
+    semantic_masks, bordered_masks = (
         F.interpolate(
-            semantic_masks,
+            mask.data.cpu(),
             scale_factor=scaling,
-            mode="bilinear",
+            mode=interpolation,
             align_corners=False,
         )
-        .data.cpu()
         .squeeze(-3)
         .numpy()
+        for mask in (semantic_masks, bordered_masks)
     )
 
-    bordered_masks = (
-        F.interpolate(
-            bordered_masks,
-            scale_factor=scaling,
-            mode="bilinear",
-            align_corners=False,
-        )
-        .data.cpu()
-        .squeeze(-3)
-        .numpy()
-    )
-
-    res: List[np.ndarray] = []
+    result: List[np.ndarray] = []
     for semantic, bordered in zip(semantic_masks, bordered_masks):
         watershed_marks = label(bordered > watershed_threshold, background=0)
         instance_regions = watershed(-bordered, watershed_marks)
 
         instance_regions[semantic < instance_mask_threshold] = 0
 
-        res.append(instance_regions)
+        result.append(instance_regions)
 
-    return res
+    return result
 
 
 def _is_ccw(vertices: np.ndarray):

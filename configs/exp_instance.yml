@@ -139,22 +139,24 @@ stages:
         watershed_threshold: 0.9
         mask_threshold: 0.8
         output_key: instance_mask
+        out_key_semantic: semantic_mask
+        out_key_border: border_mask
 
       saver_mask:
         callback: OverlayMaskImageSaverCallback
         output_dir: infer
         filename_suffix: _01_raw_mask
         output_key: mask
-      # saver_semantic:
-      #   callback: OverlayMaskImageSaverCallback
-      #   output_dir: infer
-      #   filename_suffix: _02_semantic_mask
-      #   output_key: semantic_mask
-      # saver_border:
-      #   callback: OverlayMaskImageSaverCallback
-      #   output_dir: infer
-      #   filename_suffix: _03_border_mask
-      #   output_key: border_mask
+      saver_semantic:
+        callback: OverlayMaskImageSaverCallback
+        output_dir: infer
+        filename_suffix: _02_semantic_mask
+        output_key: semantic_mask
+      saver_border:
+        callback: OverlayMaskImageSaverCallback
+        output_dir: infer
+        filename_suffix: _03_border_mask
+        output_key: border_mask
       saver_instance:
         callback: OverlayMaskImageSaverCallback
         output_dir: infer
