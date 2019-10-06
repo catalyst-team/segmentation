@@ -3,17 +3,18 @@ import os
 import numpy as np
 import imageio
 
-from pytorch_toolbelt.utils.fs import id_from_fname
 import safitty
 from tqdm import tqdm
 
 from catalyst.utils import boolean_flag, mimwrite_with_meta
 
+from utils import id_from_fname
+
 
 def build_args(parser):
     parser.add_argument("--in-dir", type=str, required=True)
     parser.add_argument("--out-dir", type=str, required=True)
-    parser.add_argument("--config", type=str, required=True)
+    parser.add_argument("--color2label", type=str, required=True)
     boolean_flag(parser, "verbose", default=False)
 
     return parser
@@ -27,13 +28,13 @@ def parse_args():
 
 
 def main(args, _=None):
-    config = safitty.load(args.config)
-    annotation = config["mapping"]
+    params = safitty.load(args.color2label)
+    annotation = params["mapping"]
     os.makedirs(args.out_dir, exist_ok=True)
 
     for fname in tqdm(os.listdir(args.in_dir), disable=(not args.verbose)):
         image = imageio.imread(
-            os.path.join(args.in_dir, fname), pilmode=config["pilmode"]
+            os.path.join(args.in_dir, fname), pilmode=params["pilmode"]
         )
         heigth, width = image.shape[:2]
         mask = np.zeros((heigth, width, len(annotation)), dtype=np.uint8)

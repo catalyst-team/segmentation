@@ -5,15 +5,17 @@ import shutil
 import numpy as np
 from skimage import measure, morphology
 
-from pytorch_toolbelt.utils.fs import find_images_in_dir
 from tqdm import tqdm
 
 from catalyst.utils import boolean_flag, imread, mimwrite_with_meta
+
+from.utils import find_images_in_dir
 
 
 def build_args(parser):
     parser.add_argument("--in-dir", type=str, required=True)
     parser.add_argument("--out-dir", type=str, required=True)
+    parser.add_argument("--threshold", type=float, default=0)
     parser.add_argument("--n-channels", type=int, choices={2, 3}, default=2)
     boolean_flag(parser, "verbose", default=False)
 
@@ -34,7 +36,7 @@ def mimread_from_dir(dirpath: str, **kwargs) -> List[np.ndarray]:
 
     mim = [
         imread(fname, rootpath=dirpath, **kwargs).astype(np.uint8)
-        for fname in os.listdir(dirpath)
+        for fname in find_images_in_dir(dirpath)
     ]
     return mim
 
@@ -96,7 +98,7 @@ def main(args, _=None):
             expand_dims=False
         )
 
-        labels = mim_color_encode(masks)
+        labels = mim_color_encode(masks, args.threshold)
 
         scaled_blobs = morphology.dilation(labels > 0, morphology.square(9))
         watersheded_blobs = morphology.watershed(
@@ -110,7 +112,7 @@ def main(args, _=None):
         props = measure.regionprops(labels)
         max_area = max(p.area for p in props)
 
-        mask_without_borders = mim_interaction(masks)
+        mask_without_borders = mim_interaction(masks, args.threshold)
         borders = np.zeros_like(labels, dtype=np.uint8)
         for y0 in range(labels.shape[0]):
             for x0 in range(labels.shape[1]):

@@ -1,12 +1,9 @@
 import argparse
 import collections
-import logging
 import os
 import pandas as pd
 
-from pytorch_toolbelt.utils.fs import find_images_in_dir, id_from_fname
-
-logger = logging.getLogger(__name__)
+from utils import find_images_in_dir, id_from_fname
 
 
 def build_args(parser):
@@ -34,6 +31,19 @@ def parse_args():
 
 
 def main(args, _=None):
+    """
+
+    in_dir
+    |-- images
+    |   |-- sample_1
+    |   ..
+    |   `-- sample_N
+    `-- masks
+        |-- sample_1.tiff  # image of shape HxWxM
+        ..
+        `-- sample_N.tiff  # image of shape HxWxK
+
+    """
     samples = collections.defaultdict(dict)
     for key in ("images", "masks"):
         for fname in find_images_in_dir(os.path.join(args.in_dir, key)):
@@ -42,16 +52,11 @@ def main(args, _=None):
 
     dataframe = pd.DataFrame.from_dict(samples, orient="index")
 
-    # check for missed values
-    if dataframe.isna().any(axis=None):
-        missed_values = dataframe.isna().any(axis=1)
-        for row in dataframe[missed_values].to_dict("records"):
-            logger.warning(
-                f"sample `{row['id']}`: some of the values are missed ({row})"
-            )
-
-        # drop rows with missing values
-        dataframe = dataframe.drop(missed_values[missed_values].index)
+    isna_row = dataframe.isna().any(axis=1)
+    if isna_row.any():
+        fname = os.path.join(os.path.basename(args.out_dataset), "nans.json")
+        dataframe[isna_row].to_json(fname, orient="records")
+        dataframe.dropna(axis=0, how="any", inplace=True)
 
     print("Num samples: ", dataframe.shape[0])
 
