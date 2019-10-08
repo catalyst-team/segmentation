@@ -98,7 +98,7 @@ class InstanceCropSaverCallback(OriginalImageSaverCallback):
             relative=relative,
             filename_suffix=filename_extension,
             input_key=input_key,
-            path_key=outpath_key
+            outpath_key=outpath_key
         )
         self.output_key = output_key
 
@@ -107,7 +107,7 @@ class InstanceCropSaverCallback(OriginalImageSaverCallback):
         images = tensor_to_ndimage(state.input[self.input_key].cpu())
         masks = state.output[self.output_key]
 
-        for image, name, masks_ in zip(names, images, masks):
+        for name, image, masks_ in zip(names, images, masks):
             instances = crop_by_masks(image, masks_)
 
             for index, crop in enumerate(instances):

@@ -32,7 +32,7 @@ def encode_mask_with_color(
     for observation in semantic_masks:
         result = np.zeros_like(observation[0], dtype=np.int32)
         for i, ch in enumerate(observation, start=1):
-            result[ch >= threshold] = i
+            result[ch > threshold] = i
 
         batch.append(result)
 
@@ -99,7 +99,7 @@ def get_rects_from_mask(
     total_h, total_w = label_mask.shape
     total_area = total_h * total_w
 
-    res = []
+    result = []
     for p in props:
 
         if p.area / total_area < min_area_fraction:
@@ -115,11 +115,11 @@ def get_rects_from_mask(
         if _is_ccw(rect):
             rect = rect[::-1]
 
-        res.append(rect)
+        result.append(rect)
 
-    res = np.stack(res)
+    result = np.stack(result) if result else []
 
-    return res
+    return result
 
 
 def perspective_crop(
@@ -128,23 +128,23 @@ def perspective_crop(
     output_wh: Tuple[int, int],
     border_color=(255, 255, 255)
 ):
-    w, h = output_wh
-    target_coords = ((0, 0), (w, 0), (w, h), (0, h))
+    width, height = output_wh
+    target_coords = ((0, 0), (width, 0), (width, height), (0, height))
 
     transform_matrix = cv2.getPerspectiveTransform(
         np.array(crop_coords, dtype=np.float32),
         np.array(target_coords, dtype=np.float32),
     )
 
-    res = cv2.warpPerspective(
+    result = cv2.warpPerspective(
         image,
         transform_matrix,
-        (w, h),
+        (width, height),
         borderMode=cv2.BORDER_CONSTANT,
-        borderValue=border_color,
+        borderValue=(border_color),
     )
 
-    return res
+    return result
 
 
 def perspective_crop_keep_ratio(
@@ -168,20 +168,16 @@ def perspective_crop_keep_ratio(
 
     len_ab, len_bc, len_cd, len_da = lenghts.tolist()
 
-    w = (len_ab + len_cd) / 2
-    h = (len_bc + len_da) / 2
+    width = (len_ab + len_cd) / 2
+    height = (len_bc + len_da) / 2
 
     if output_size > 0:
-        if h > w:
-            scale = output_size / h
-            h, w = output_size, w * scale
-        else:
-            scale = output_size / w
-            h, w = h * scale, output_size
+        scale = output_size / max(width, height)
+        width, height = (dim * scale for dim in (width, height))
 
-    h, w = round(h), round(w)
+    width, height = round(width), round(height)
 
-    crop = perspective_crop(image, vertices, (w, h), border_color)
+    crop = perspective_crop(image, vertices, (width, height), border_color)
 
     return crop
 
