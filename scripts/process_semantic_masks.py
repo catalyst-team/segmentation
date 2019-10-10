@@ -1,12 +1,11 @@
 import argparse
 import os
 import numpy as np
-import imageio
 
 import safitty
 from tqdm import tqdm
 
-from catalyst.utils import boolean_flag, mimwrite_with_meta
+from catalyst.utils import boolean_flag, imread, mimwrite_with_meta
 
 from utils import id_from_fname
 
@@ -14,7 +13,7 @@ from utils import id_from_fname
 def build_args(parser):
     parser.add_argument("--in-dir", type=str, required=True)
     parser.add_argument("--out-dir", type=str, required=True)
-    parser.add_argument("--color2label", type=str, required=True)
+    parser.add_argument("--index2color", type=str, required=True)
     boolean_flag(parser, "verbose", default=False)
 
     return parser
@@ -28,20 +27,17 @@ def parse_args():
 
 
 def main(args, _=None):
-    params = safitty.load(args.color2label)
-    annotation = params["mapping"]
-    os.makedirs(args.out_dir, exist_ok=True)
+    index2color = safitty.load(args.index2color)
+    index2color = {int(key): value for key, value in index2color.items()}
+    n_colors = len(index2color)
 
+    os.makedirs(args.out_dir, exist_ok=True)
     for fname in tqdm(os.listdir(args.in_dir), disable=(not args.verbose)):
-        image = imageio.imread(
-            os.path.join(args.in_dir, fname), pilmode=params["pilmode"]
-        )
+        image = imread(fname, rootpath=args.in_dir)
         heigth, width = image.shape[:2]
-        mask = np.zeros((heigth, width, len(annotation)), dtype=np.uint8)
-        for index, (class_name, class_params) in enumerate(annotation.items()):
-            label = class_params.get("label", index)
-            color = class_params.get("color", label)
-            mask[np.all((image == color), axis=-1), label] = 255
+        mask = np.zeros((heigth, width, n_colors), dtype=np.uint8)
+        for index in range(n_colors):
+            mask[np.all((image == index2color[index]), axis=-1), index] = 255
 
         mimwrite_with_meta(
             f"{args.out_dir}/{id_from_fname(fname)}.tiff",
