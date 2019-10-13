@@ -10,7 +10,7 @@ class RawMaskPostprocessingCallback(Callback):
         self,
         threshold: float = 0.5,
         input_key: str = "logits",
-        output_key: str = "mask"
+        output_key: str = "mask",
     ):
         super().__init__(CallbackOrder.Internal)
         self.threshold = threshold
@@ -35,7 +35,7 @@ class InstanceMaskPostprocessingCallback(Callback):
         input_key: str = "logits",
         output_key: str = "instance_mask",
         out_key_semantic: str = None,
-        out_key_border: str = None
+        out_key_border: str = None,
     ):
         super().__init__(CallbackOrder.Internal)
         self.watershed_threshold = watershed_threshold

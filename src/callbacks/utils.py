@@ -22,10 +22,10 @@ def encode_mask_with_color(
     """
 
     Args:
-        semantic_masks: semantic mask batch tensor
-        threshold: threshold for semantic masks
+        semantic_masks (torch.Tensor): semantic mask batch tensor
+        threshold (float): threshold for semantic masks
     Returns:
-        List of semantic masks
+        List[np.ndarray]: list of semantic masks
 
     """
     batch = []
@@ -45,7 +45,7 @@ def label_instances(
     watershed_threshold: float = 0.9,
     instance_mask_threshold: float = 0.5,
     downscale_factor: float = 4,
-    interpolation: str = "bilinear"
+    interpolation: str = "bilinear",
 ) -> List[np.ndarray]:
     """
 
@@ -126,7 +126,7 @@ def perspective_crop(
     image: np.ndarray,
     crop_coords: Union[Quadrangle, np.ndarray],
     output_wh: Tuple[int, int],
-    border_color=(255, 255, 255)
+    border_color: Tuple[int, int, int] = (255, 255, 255),
 ):
     width, height = output_wh
     target_coords = ((0, 0), (width, 0), (width, height), (0, height))
@@ -151,7 +151,7 @@ def perspective_crop_keep_ratio(
     image: np.ndarray,
     vertices: np.ndarray,
     output_size: int = -1,
-    border_color=(255, 255, 255)
+    border_color: Tuple[int, int, int] = (255, 255, 255),
 ) -> np.ndarray:
     """
     Crop some quadrilateral from image keeping it's aspect ratio

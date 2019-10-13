@@ -17,7 +17,7 @@ class OriginalImageSaverCallback(Callback):
         filename_suffix: str = "",
         filename_extension: str = ".jpg",
         input_key: str = "image",
-        outpath_key: str = "name"
+        outpath_key: str = "name",
     ):
         super().__init__(CallbackOrder.Other)
         self.output_dir = Path(output_dir)
@@ -59,7 +59,7 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
         filename_extension: str = ".jpg",
         input_key: str = "image",
         output_key: str = "mask",
-        outpath_key: str = "name"
+        outpath_key: str = "name",
     ):
         super().__init__(
             output_dir=output_dir,
@@ -67,7 +67,7 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
             filename_suffix=filename_suffix,
             filename_extension=filename_extension,
             input_key=input_key,
-            outpath_key=outpath_key
+            outpath_key=outpath_key,
         )
         self.mask_strength = mask_strength
         self.output_key = output_key
@@ -91,14 +91,14 @@ class InstanceCropSaverCallback(OriginalImageSaverCallback):
         filename_extension: str = ".jpg",
         input_key: str = "image",
         output_key: str = "mask",
-        outpath_key: str = "name"
+        outpath_key: str = "name",
     ):
         super().__init__(
             output_dir=output_dir,
             relative=relative,
             filename_suffix=filename_extension,
             input_key=input_key,
-            outpath_key=outpath_key
+            outpath_key=outpath_key,
         )
         self.output_key = output_key
 

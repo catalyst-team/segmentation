@@ -70,7 +70,7 @@ class SegmentationMeanAPCallback(MetricCallback):
         input_key: str = "imasks",
         output_key: str = "instance_mask",
         prefix: str = "mAP",
-        iou_thresholds=(0.5, 0.55, 0.6, 0.7, 0.75, 0.8, 0.9, 0.95)
+        iou_thresholds=(0.5, 0.55, 0.6, 0.7, 0.75, 0.8, 0.9, 0.95),
     ):
         super().__init__(
             prefix=prefix,

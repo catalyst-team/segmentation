@@ -5,14 +5,13 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from catalyst.data import ImageReader, LambdaReader, ListDataset, \
+from catalyst.data import ImageReader, ListDataset, MaskReader, \
     ReaderCompose, ScalarReader
 from catalyst.dl import ConfigExperiment
 from catalyst.utils.pandas import read_csv_data
 
 from .transforms import Compose, hard_transform, post_transforms, \
     pre_transforms
-from .utils import maskread
 
 
 class Experiment(ConfigExperiment):
@@ -38,7 +37,7 @@ class Experiment(ConfigExperiment):
         if mode == "train":
             post_transform_fn = Compose([
                 hard_transform(image_size=image_size),
-                post_transforms()
+                post_transforms(),
             ])
         elif mode in ["valid", "infer"]:
             post_transform_fn = post_transforms()
@@ -71,7 +70,7 @@ class Experiment(ConfigExperiment):
         tag_column: str = None,
         folds_seed: int = 42,
         n_folds: int = 5,
-        image_size: int = 256
+        image_size: int = 256,
     ):
         datasets = collections.OrderedDict()
         tag2class = (
@@ -89,40 +88,34 @@ class Experiment(ConfigExperiment):
             class_column=class_column,
             tag_column=tag_column,
             seed=folds_seed,
-            n_folds=n_folds
+            n_folds=n_folds,
         )
 
         open_fn = ReaderCompose(readers=[
             ImageReader(
-                input_key="images",
-                output_key="image",
-                datapath=datapath
+                input_key="images", output_key="image", datapath=datapath
             ),
-            LambdaReader(
-                input_key="masks",
-                output_key="mask",
-                encode_fn=maskread,
-                rootpath=datapath
+            MaskReader(
+                input_key="masks", output_key="mask", datapath=datapath
             ),
             ScalarReader(
                 input_key="name",
                 output_key="name",
                 default_value=-1,
-                dtype=str
-            )
+                dtype=str,
+            ),
         ])
 
         for mode, source in zip(
             ("train", "valid", "infer"), (df_train, df_valid, df_infer)
         ):
             if len(source) > 0:
-                dataset = ListDataset(
+                datasets[mode] = ListDataset(
                     list_data=source,
                     open_fn=open_fn,
                     dict_transform=self.get_transforms(
                         stage=stage, mode=mode, image_size=image_size
                     ),
                 )
-                datasets[mode] = dataset
 
         return datasets
