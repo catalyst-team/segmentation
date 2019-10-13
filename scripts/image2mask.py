@@ -47,6 +47,7 @@ def main(args, _=None):
     samples = collections.defaultdict(dict)
     for key in ("images", "masks"):
         for fname in find_images_in_dir(os.path.join(args.in_dir, key)):
+            fname = os.path.join(key, fname)
             sample_id = id_from_fname(fname)
             samples[sample_id].update({"name": sample_id, key: fname})
 

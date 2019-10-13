@@ -95,7 +95,7 @@ def main(args, _=None):
             "masks",
             rootpath=f"{args.in_dir}/{sample}",
             grayscale=True,
-            expand_dims=False
+            expand_dims=False,
         )
 
         labels = mim_color_encode(masks, args.threshold)
@@ -134,7 +134,7 @@ def main(args, _=None):
 
                 uniq = np.unique(labels[
                     max(0, y0 - sz):min(labels.shape[0], y0 + sz + 1),
-                    max(0, x0 - sz):min(labels.shape[1], x0 + sz + 1)
+                    max(0, x0 - sz):min(labels.shape[1], x0 + sz + 1),
                 ])
                 if len(uniq[uniq > 0]) > 1:
                     borders[y0, x0] = 255

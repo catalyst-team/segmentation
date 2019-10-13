@@ -42,7 +42,7 @@ def main(args, _=None):
         mimwrite_with_meta(
             f"{args.out_dir}/{id_from_fname(fname)}.tiff",
             np.dsplit(mask, mask.shape[2]),
-            {"compress": 9}
+            {"compress": 9},
         )
 
 
