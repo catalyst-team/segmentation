@@ -56,7 +56,7 @@ def render_config(
     )
 
     template = _env.get_template(in_template.name)
-    
+
     if num_classes is None:
         with (dataset_path / "index2color.json").open() as f:
             num_classes = len(json.load(f))

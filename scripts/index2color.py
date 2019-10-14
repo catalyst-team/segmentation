@@ -23,7 +23,7 @@ def build_args(parser):
         help="Path to output JSON"
     )
     parser.add_argument(
-        "--num-workers", "-j",
+        "--num-workers",
         default=1,
         type=int,
         help="Number of workers to parallel the processing"

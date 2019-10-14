@@ -1,6 +1,7 @@
 import argparse
 import collections
 import os
+from pathlib import Path
 import pandas as pd
 
 from utils import find_images_in_dir, id_from_fname
@@ -9,14 +10,14 @@ from utils import find_images_in_dir, id_from_fname
 def build_args(parser):
     parser.add_argument(
         "--in-dir",
-        type=str,
         required=True,
+        type=Path,
         help="Path to directory with dataset"
     )
     parser.add_argument(
         "--out-dataset",
-        type=str,
         required=True,
+        type=Path,
         help="Path to output dataframe"
     )
 
@@ -46,7 +47,7 @@ def main(args, _=None):
     """
     samples = collections.defaultdict(dict)
     for key in ("images", "masks"):
-        for fname in find_images_in_dir(os.path.join(args.in_dir, key)):
+        for fname in find_images_in_dir(args.in_dir / key):
             fname = os.path.join(key, fname)
             sample_id = id_from_fname(fname)
             samples[sample_id].update({"name": sample_id, key: fname})
@@ -55,7 +56,7 @@ def main(args, _=None):
 
     isna_row = dataframe.isna().any(axis=1)
     if isna_row.any():
-        fname = os.path.join(os.path.basename(args.out_dataset), "nans.json")
+        fname = os.path.join(args.out_dataset.parent, "nans.json")
         dataframe[isna_row].to_json(fname, orient="records")
         dataframe.dropna(axis=0, how="any", inplace=True)
 

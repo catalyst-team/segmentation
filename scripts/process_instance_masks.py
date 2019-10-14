@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from catalyst.utils import boolean_flag, imread, mimwrite_with_meta
 
-from.utils import find_images_in_dir
+from .utils import find_images_in_dir
 
 
 def build_args(parser):
