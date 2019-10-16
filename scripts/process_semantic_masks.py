@@ -5,7 +5,7 @@ import numpy as np
 
 import safitty
 
-from catalyst.utils import boolean_flag, imread, mimwrite_with_meta, \
+from catalyst.utils import imread, mimwrite_with_meta, \
     Pool, tqdm_parallel_imap, get_pool
 
 from utils import id_from_fname
