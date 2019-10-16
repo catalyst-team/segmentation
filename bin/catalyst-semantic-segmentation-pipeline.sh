@@ -1,15 +1,30 @@
 #!/usr/bin/env bash
 #title           :catalyst-semantic-segmentation-pipeline
 #description     :catalyst.dl script for semantic segmentation pipeline run
-#author          :
-#author_email    :
-#date            :
-#version         :
+#author          :Sergey Kolesnikov, Yauheni Kachan
+#author_email    :scitator@gmail.com, yauheni.kachan@gmail.com
+#date            :20191016
+#version         :19.10.2
 #==============================================================================
 
 # usage:
+# WORKDIR=/path/to/logdir \
+# DATADIR=/path/to/dataset \
+# IMAGE_SIZE=... \
+# CONFIG_TEMPLATE=... \ # model config to use
+# ./bin/catalyst-semantic-segmentation-pipeline.sh
 
 # example:
+# CUDA_VISIBLE_DEVICES=0 \
+# CUDNN_BENCHMARK="True" \
+# CUDNN_DETERMINISTIC="True" \
+# WORKDIR=./logs \
+# DATADIR=./data/origin \
+# IMAGE_SIZE=256 \
+# CONFIG_TEMPLATE=./configs/templates/semantic.yml \
+# NUM_WORKERS=4 \
+# BATCH_SIZE=256 \
+# ./bin/catalyst-semantic-segmentation-pipeline.sh
 
 set -e
 
