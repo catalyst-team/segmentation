@@ -1,0 +1,37 @@
+model_params:
+  model: ResnetUnet
+  arch: resnet18
+  pretrained: True
+
+stages:
+
+  # train head
+  stage1:
+
+    state_params:
+      num_epochs: 20
+
+    optimizer_params:
+      optimizer: Adam
+      lr: 0.001
+      weight_decay: 0.0001
+
+    scheduler_params:
+      scheduler: MultiStepLR
+      milestones: [10]
+      gamma: 0.3
+
+  # tune whole network
+  stage2:
+
+    state_params:
+      num_epochs: 10
+
+    optimizer_params:
+      optimizer: SGD
+      lr: 0.0001
+
+    scheduler_params:
+      scheduler: MultiStepLR
+      milestones: [10]
+      gamma: 0.3

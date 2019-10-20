@@ -1,0 +1,9 @@
+catalyst==19.10.2
+albumentations==0.3.2
+opencv-python==4.1.1.26
+
+# Used in scripts
+jinja2
+pandas>=0.22
+safitty>=1.2.3
+tqdm>=4.29.1
