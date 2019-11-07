@@ -163,6 +163,51 @@ docker run -it --rm --shm-size 8G --runtime=nvidia \
    -e "BATCH_SIZE=256" \
    catalyst-segmentation ./bin/catalyst-binary-segmentation-pipeline.sh
 ```
+
+<details>
+<summary>Semantic segmentation pipeline</summary>
+<p>
+
+#### Run in local environment:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 \
+CUDNN_BENCHMARK="True" \
+CUDNN_DETERMINISTIC="True" \
+WORKDIR=./logs \
+DATADIR=./data/origin \
+IMAGE_SIZE=256 \
+CONFIG_TEMPLATE=./configs/templates/semantic.yml \
+NUM_WORKERS=4 \
+BATCH_SIZE=256 \
+bash ./bin/catalyst-semantic-segmentation-pipeline.sh
+```
+
+#### Run in docker:
+
+```bash
+export LOGDIR=$(pwd)/logs
+docker run -it --rm --shm-size 8G --runtime=nvidia \
+   -v $(pwd):/workspace/ \
+   -v $LOGDIR:/logdir/ \
+   -v $(pwd)/data/origin:/data \
+   -e "CUDA_VISIBLE_DEVICES=0" \
+   -e "USE_WANDB=1" \
+   -e "LOGDIR=/logdir" \
+   -e "CUDNN_BENCHMARK='True'" \
+   -e "CUDNN_DETERMINISTIC='True'" \
+   -e "WORKDIR=/logdir" \
+   -e "DATADIR=/data" \
+   -e "IMAGE_SIZE=256" \
+   -e "CONFIG_TEMPLATE=./configs/templates/semantic.yml" \
+   -e "NUM_WORKERS=4" \
+   -e "BATCH_SIZE=256" \
+   catalyst-segmentation ./bin/catalyst-semantic-segmentation-pipeline.sh
+```
+
+</p>
+</details>
+
 The pipeline is running and you don’t have to do anything else, it remains to wait for the best model!
 
 #### Visualizations
@@ -199,3 +244,29 @@ All results of all experiments can be found locally in `WORKDIR`, by default `ca
 
 #### code
 *  The directory contains code on which calculations were performed. This is necessary for complete reproducibility.
+
+## 5. Customize own pipeline
+
+For your future experiments framework provides powerful configs allow to optimize configuration of the whole pipeline of segmentation in a controlled and reproducible way.
+
+<details>
+<summary>Configure your experiments</summary>
+<p>
+
+* Common settings of stages of training and model parameters can be found in `catalyst.segmentation/configs/_common.yml`.
+    * `model_params`: detailed configuration of models, including:
+        * model, for instance `ResnetUnet`
+        * detailed architecture description
+        * using pretrained model
+    * `stages`: you can configure training or inference in several stages with different hyperparameters. In our example:
+        * optimizer params
+        * first learn the head(s), then train the whole network
+
+* The `CONFIG_TEMPLATE` with other experiment\`s hyperparameters, such as data_params and is here: `catalyst.segmentation/configs/templates/binary.yml`.  The config allows you to define:
+    * `data_params`: path, batch size, num of workers and so on
+    * `callbacks_params`: Callbacks are used to execute code during training, for example, to get metrics or save checkpoints. Catalyst provide wide variety of helpful callbacks also you can use custom.
+
+You can find much more options for configuring experiments in [catalyst documentation.](https://catalyst-team.github.io/catalyst/)
+
+</p>
+</details>
