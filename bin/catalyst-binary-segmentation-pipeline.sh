@@ -97,6 +97,8 @@ mkdir -p $LOGDIR
 if [[ -z "${SKIPDATA}" ]]; then
     cp -R $DATADIR/* $DATASET_DIR/
 
+    mv $DATASET_DIR/raw_masks $DATASET_DIR/masks
+
     python scripts/image2mask.py \
         --in-dir $DATASET_DIR \
         --out-dataset $DATASET_DIR/dataset_raw.csv
