@@ -19,7 +19,7 @@ You will learn how to build image segmentation pipeline with transfer learning u
 ### Using local environment: 
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements/requirements.txt
 ```
 
 ### Using docker:
