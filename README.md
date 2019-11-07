@@ -127,6 +127,10 @@ The pipeline will automatically guide you from raw data to the production-ready 
 
 We will initialize [Unet](https://arxiv.org/abs/1505.04597) model with a pre-trained [ResNet-18](https://arxiv.org/abs/1512.03385) encoder. During current pipeline model will be trained sequentially in two stages.
 
+<details open>
+<summary>Binary segmentation pipeline</summary>
+<p>
+
 #### Run in local environment:
 
 ```bash
@@ -163,6 +167,9 @@ docker run -it --rm --shm-size 8G --runtime=nvidia \
    -e "BATCH_SIZE=256" \
    catalyst-segmentation ./bin/catalyst-binary-segmentation-pipeline.sh
 ```
+
+</p>
+</details>
 
 <details>
 <summary>Semantic segmentation pipeline</summary>
