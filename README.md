@@ -41,19 +41,13 @@ make docker-build
 ```bash
 export DATASET="isbi"
 
-function gdrive_download () {
-  CONFIRM=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate "https://docs.google.com/uc?export=download&id=$1" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')
-  wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$CONFIRM&id=$1" -O $2
-  rm -rf /tmp/cookies.txt
-}
-
 rm -rf data/
 mkdir -p data
 
 if [[ "$DATASET" == "isbi" ]]; then
     # binary segmentation
     # http://brainiac2.mit.edu/isbi_challenge/
-    gdrive_download 1uyPb9WI0t2qMKIqOjFKMv1EtfQ5FAVEI isbi_cleared_191107.tar.gz
+    download-gdrive 1uyPb9WI0t2qMKIqOjFKMv1EtfQ5FAVEI isbi_cleared_191107.tar.gz
     tar -xf isbi_cleared_191107.tar.gz &>/dev/null
     mv isbi_cleared_191107 ./data/origin
 elif [[ "$DATASET" == "voc2012" ]]; then
@@ -231,7 +225,7 @@ wandb: (3) Don't visualize my results
 Tensorboard also can be used for visualisation:
 
 ```bash
-tensorboard --logdir=/catalyst.classification/logs
+tensorboard --logdir=/catalyst.segmentation/logs
 ```
 <img src="/pics/tf_metrics.png" title="tf binary segmentation metrics"  align="left">
 
