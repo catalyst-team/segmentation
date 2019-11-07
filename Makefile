@@ -4,7 +4,7 @@ check-style:
 codestyle:
 	bash ./bin/_check_codestyle.sh
 
-docker-build: ./requirements/requirements_docker.txt
+docker-build: ./requirements.txt
 	docker build -t catalyst-segmentation:latest . -f docker/Dockerfile
 
 docker-clean:
