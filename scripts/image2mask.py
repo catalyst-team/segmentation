@@ -2,6 +2,7 @@ import argparse
 import collections
 import os
 from pathlib import Path
+
 import pandas as pd
 
 from utils import find_images_in_dir, id_from_fname

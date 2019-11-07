@@ -1,7 +1,6 @@
 import torch
 
 from catalyst.dl import Callback, CallbackOrder, RunnerState
-
 from .utils import encode_mask_with_color
 
 

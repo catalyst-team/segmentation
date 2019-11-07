@@ -1,12 +1,14 @@
+.PHONY: check-style codestyle docker-build clean
+
 check-style:
 	bash ./bin/_check_codestyle.sh -s
 
 codestyle:
-	bash ./bin/_check_codestyle.sh
+	pre-commit run
 
 docker-build: ./requirements/requirements_docker.txt
 	docker build -t catalyst-segmentation:latest . -f docker/Dockerfile
 
-docker-clean:
+clean:
 	rm -rf build/
 	docker rmi -f catalyst-segmentation:latest

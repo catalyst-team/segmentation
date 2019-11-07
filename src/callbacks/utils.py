@@ -1,6 +1,6 @@
-from typing import List
-import numpy as np
+from typing import List  # isort:skip
 
+import numpy as np
 from skimage.color import label2rgb
 
 import torch

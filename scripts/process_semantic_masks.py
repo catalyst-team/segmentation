@@ -1,13 +1,13 @@
 import argparse
 import os
 from pathlib import Path
-import numpy as np
 
+import numpy as np
 import safitty
 
-from catalyst.utils import imread, mimwrite_with_meta, \
-    Pool, tqdm_parallel_imap, get_pool
-
+from catalyst.utils import (
+    get_pool, imread, mimwrite_with_meta, Pool, tqdm_parallel_imap
+)
 from utils import id_from_fname
 
 

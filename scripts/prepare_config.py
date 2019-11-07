@@ -9,8 +9,8 @@
 #     --batch-size=64 \
 #     --image-size=256
 
-import json
 import argparse
+import json
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
