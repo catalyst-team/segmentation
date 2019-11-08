@@ -1,17 +1,19 @@
 import collections
 import json
+
 import numpy as np
 
 import torch
 import torch.nn as nn
 
-from catalyst.data import ImageReader, ListDataset, MaskReader, \
-    ReaderCompose, ScalarReader
+from catalyst.data import (
+    ImageReader, ListDataset, MaskReader, ReaderCompose, ScalarReader
+)
 from catalyst.dl import ConfigExperiment
 from catalyst.utils.pandas import read_csv_data
-
-from .transforms import Compose, hard_transform, post_transforms, \
-    pre_transforms
+from .transforms import (
+    Compose, hard_transform, post_transforms, pre_transforms
+)
 
 
 class Experiment(ConfigExperiment):

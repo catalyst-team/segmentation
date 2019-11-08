@@ -1,12 +1,13 @@
-from typing import Set
+from typing import Set  # isort:skip
 import argparse
 import collections
-from functools import reduce
+import functools
 import json
 import os
+
 import numpy as np
 
-from catalyst.utils import imread, get_pool, tqdm_parallel_imap
+from catalyst.utils import get_pool, imread, tqdm_parallel_imap
 
 
 def build_args(parser):
@@ -50,7 +51,7 @@ def main(args, _=None):
     with get_pool(args.num_workers) as pool:
         images = os.listdir(args.in_dir)
         colors = tqdm_parallel_imap(colors_in_image, images, pool)
-        unique_colors = reduce(lambda s1, s2: s1 | s2, colors)
+        unique_colors = functools.reduce(lambda s1, s2: s1 | s2, colors)
 
     index2color = collections.OrderedDict([
         (index, color) for index, color in enumerate(sorted(unique_colors))

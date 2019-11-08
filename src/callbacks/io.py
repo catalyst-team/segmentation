@@ -1,11 +1,10 @@
 from pathlib import Path
-import numpy as np
 
 import imageio
+import numpy as np
 
 from catalyst.dl import Callback, CallbackOrder, RunnerState
 from catalyst.utils.image import tensor_to_ndimage
-
 from .utils import mask_to_overlay_image
 
 

@@ -3,15 +3,26 @@
 # Cause the script to exit if a single command fails
 set -eo pipefail
 
+is_submodule() {
+    (cd "$(git rev-parse --show-toplevel)/.." && git rev-parse --is-inside-work-tree) | grep -q true
+}
+
 # this stops git rev-parse from failing if we run this from the .git directory
 builtin cd "$(dirname "${BASH_SOURCE:-$0}")"
 
 ROOT="$(git rev-parse --show-toplevel)"
 builtin cd "$ROOT" || exit 1
 
-# Add the upstream branch if it doesn't exist
-if ! [[ -e "$ROOT/.git/refs/remotes/upstream" ]]; then
-    git remote add 'upstream' 'https://github.com/catalyst-team/segmentation'
+if is_submodule; then
+    # Add the upstream branch if it doesn't exist
+    if ! [[ -e "$ROOT/../.git/modules/catalyst/refs/remotes/upstream" ]]; then
+        git remote add 'upstream' 'https://github.com/catalyst-team/segmentation'
+    fi
+else
+    # Add the upstream branch if it doesn't exist
+    if ! [[ -e "$ROOT/.git/refs/remotes/upstream" ]]; then
+        git remote add 'upstream' 'https://github.com/catalyst-team/segmentation'
+    fi
 fi
 
 
@@ -19,7 +30,7 @@ fi
 git fetch upstream master
 
 YAPF_FLAGS=(
-    '--style' "$ROOT/.style.yapf"
+    '--style' "$ROOT/setup.cfg"
     '--recursive'
     '--parallel'
 )
@@ -52,11 +63,11 @@ format_changed() {
 
 # Format all files, and print the diff to stdout for travis.
 format_all() {
-    yapf --diff "${YAPF_FLAGS[@]}" "${YAPF_EXCLUDES[@]}" ./**/*.py
+    yapf --diff "${YAPF_FLAGS[@]}" "${YAPF_EXCLUDES[@]}" ./**/**/*.py
 }
 
 format_all_in_place() {
-    yapf --in-place "${YAPF_FLAGS[@]}" "${YAPF_EXCLUDES[@]}" ./**/*.py
+    yapf --in-place "${YAPF_FLAGS[@]}" "${YAPF_EXCLUDES[@]}" ./**/**/*.py
 }
 
 # This flag formats individual files. --files *must* be the first command line
@@ -75,11 +86,11 @@ else
 fi
 
 if ! git diff --quiet &>/dev/null; then
-    echo 'Reformatted changed files. Please review and stage the changes.'
-    echo 'Files updated:'
-    echo
+    echo 'Reformatted changed files. Please review and stage the changes.' 1>&2
+    echo 'Files updated:' 1>&2
+    echo 1>&2
 
-    git --no-pager diff --name-only
+    git --no-pager diff --name-only 1>&2
 
     exit 1
 fi
