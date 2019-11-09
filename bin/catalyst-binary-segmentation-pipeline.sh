@@ -32,9 +32,9 @@ set -e
 # uncomment and run bash ./bin/catalyst-binary-segmentation-pipeline.sh
 
 #mkdir -p ./data
-#wget https://www.dropbox.com/s/cgf66pl8u0ytow7/isbi_cleared_191013.tar.gz
-#tar -xf isbi_cleared_191013.tar.gz &>/dev/null
-#mv isbi_cleared_191013 ./data/origin
+#download-gdrive 1uyPb9WI0t2qMKIqOjFKMv1EtfQ5FAVEI isbi_cleared_191107.tar.gz
+#tar -xf isbi_cleared_191107.tar.gz &>/dev/null
+#mv isbi_cleared_191107 ./data/origin
 #
 #export CUDNN_BENCHMARK="True"
 #export CUDNN_DETERMINISTIC="True"
