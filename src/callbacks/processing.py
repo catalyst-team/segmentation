@@ -21,6 +21,5 @@ class RawMaskPostprocessingCallback(Callback):
             state.output[self.input_key].data.cpu()
         ).numpy()
 
-        state.output[self.output_key] = encode_mask_with_color(
-            output, self.threshold
-        )
+        state.output[self.output_key] = \
+            encode_mask_with_color(output, self.threshold)
