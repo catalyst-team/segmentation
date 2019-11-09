@@ -38,7 +38,7 @@ class ImageToRGB(A.core.transforms_interface.ImageOnlyTransform):
 
     def apply(self, img: np.ndarray, **params) -> np.ndarray:
         """Convert the input image to RGB if it grayscale"""
-        if len(img.shape) < 3 or img.shape[-1] != 3:
+        if len(img.shape) < 3 or img.shape[-1] == 1:
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         return img
 
