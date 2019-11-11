@@ -1,0 +1,42 @@
+group: travis_latest
+language: python
+cache: pip
+
+branches:
+  only:
+  - master
+
+python:
+  - 3.6
+matrix:
+  include:
+    - python: 3.6
+
+stages:
+  - Tests
+  - Pipelines
+
+install_dl: &requirements_dl
+  pip install -r requirements/requirements.txt
+
+jobs:
+  include:
+    - stage: Tests
+      install:
+        - *requirements_dl
+        - pip install flake8 flake8-docstrings flake8-quotes isort yapf
+      script:
+        - isort -rc --check-only --settings-path ./setup.cfg
+        - make check-style
+
+    - stage: Pipelines
+      name: "Pipelines - binary segmentation"
+      install: *requirements_dl
+      script:
+        - bash ./bin/tests/_check_binary.sh
+
+    - stage: Pipelines
+      name: "Pipelines - semantic segmentation"
+      install: *requirements_dl
+      script:
+        - bash ./bin/tests/_check_semantic.sh
