@@ -6,7 +6,7 @@ check-style:
 codestyle:
 	pre-commit run
 
-docker-build: ./requirements/requirements_docker.txt
+docker-build: ./requirements/requirements-docker.txt
 	docker build -t catalyst-segmentation:latest . -f docker/Dockerfile
 
 clean:
