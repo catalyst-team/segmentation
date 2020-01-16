@@ -1,29 +1,22 @@
 import cv2
-import numpy as np
 
-import albumentations as A
 from albumentations import (
     ChannelShuffle, CLAHE, Compose, HueSaturationValue, IAAPerspective,
     JpegCompression, LongestMaxSize, Normalize, OneOf, PadIfNeeded,
     RandomBrightnessContrast, RandomGamma, RGBShift, ShiftScaleRotate, ToGray
 )
-
-from catalyst.utils import tensor_from_rgb_image
+from albumentations.pytorch import ToTensorV2
+import torch
 
 cv2.setNumThreads(0)
 cv2.ocl.setUseOpenCL(False)
 
 
-class ToTensor(A.core.transforms_interface.DualTransform):
+class ToTensor(ToTensorV2):
     """Convert image and mask to ``torch.Tensor``"""
 
-    def __call__(self, force_apply: bool = True, **kwargs):
-        """Convert image and mask to ``torch.Tensor``"""
-        kwargs.update(image=tensor_from_rgb_image(kwargs["image"]))
-        if "mask" in kwargs.keys():
-            kwargs.update(mask=tensor_from_rgb_image(kwargs["mask"]).float())
-
-        return kwargs
+    def apply_to_mask(self, mask, **params):
+        return torch.from_numpy(mask.transpose(2, 0, 1))
 
 
 def pre_transforms(image_size: int = 256):

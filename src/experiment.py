@@ -111,7 +111,7 @@ class Experiment(ConfigExperiment):
         for mode, source in zip(
             ("train", "valid", "infer"), (df_train, df_valid, df_infer)
         ):
-            if len(source) > 0:
+            if source is not None and len(source) > 0:
                 datasets[mode] = ListDataset(
                     list_data=source,
                     open_fn=open_fn,
