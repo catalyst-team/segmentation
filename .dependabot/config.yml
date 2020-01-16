@@ -3,9 +3,6 @@ update_configs:
   - package_manager: "python"
     directory: "/requirements"
     update_schedule: "daily"
-
-    default_reviewers:
-      - "bagxi"
     default_labels:
       - "dependencies"
     allowed_updates:
@@ -15,8 +12,5 @@ update_configs:
   - package_manager: "docker"
     directory: "/docker"
     update_schedule: "daily"
-
-    default_reviewers:
-      - "bagxi"
     default_labels:
       - "dependencies"
