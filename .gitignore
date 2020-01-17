@@ -8,7 +8,9 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
+builds/
 develop-eggs/
 dist/
 downloads/
@@ -23,7 +25,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -45,7 +46,6 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
-.pytest_cache/
 
 # Translations
 *.mo
@@ -54,7 +54,6 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
 
 # Flask stuff:
 instance/
@@ -81,14 +80,13 @@ celerybeat-schedule
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# dotenv
 .env
+
+# virtualenv
 .venv
-env/
 venv/
 ENV/
-env.bak/
-venv.bak/
 
 # Spyder project settings
 .spyderproject
@@ -102,3 +100,42 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+
+.DS_Store
+.idea
+.code
+
+*.bak
+*.csv
+*.tsv
+*.ipynb
+
+tmp/
+logs/
+data/
+!catalyst/data
+examples/data/
+# Examples - mock data
+!examples/distilbert_text_classification/input/*.csv
+!examples/_tests_distilbert_text_classification/input/*.csv
+examples/logs/
+notebooks/
+
+_nogit*
+
+### VisualStudioCode ###
+.vscode/*
+.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
+
+# End of https://www.gitignore.io/api/visualstudiocode
+
+
