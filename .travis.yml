@@ -43,3 +43,9 @@ jobs:
       install: *requirements_dl
       script:
         - bash ./bin/tests/_check_semantic.sh
+
+    - stage: Pipelines
+      name: "Pipelines - instance segmentation"
+      install: *requirements_dl
+      script:
+        - bash ./bin/tests/_check_instance.sh
