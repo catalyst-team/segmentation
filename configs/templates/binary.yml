@@ -118,6 +118,9 @@ stages:
       loss_aggregate_fn: "mean" # or "sum"
       multiplier: 1.0 # scale factor for the aggregated loss
 
+    raw_processor:
+      callback: RawMaskPostprocessingCallback
+
     iou_soft:
       callback: IouCallback
       input_key: mask
