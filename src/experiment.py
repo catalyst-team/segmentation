@@ -1,8 +1,6 @@
 import collections
 import json
 
-import numpy as np
-
 import torch
 import torch.nn as nn
 
@@ -11,9 +9,6 @@ from catalyst.data import (
 )
 from catalyst.dl import ConfigExperiment
 from catalyst.utils.pandas import read_csv_data
-from .transforms import (
-    Compose, hard_transform, post_transforms, pre_transforms
-)
 
 
 class Experiment(ConfigExperiment):
@@ -30,33 +25,6 @@ class Experiment(ConfigExperiment):
                 param.requires_grad = True
         return model_
 
-    @staticmethod
-    def get_transforms(
-        stage: str = None, mode: str = None, image_size: int = 256
-    ):
-        pre_transform_fn = pre_transforms(image_size=image_size)
-
-        if mode == "train":
-            post_transform_fn = Compose([
-                hard_transform(image_size=image_size),
-                post_transforms(),
-            ])
-        elif mode in ["valid", "infer"]:
-            post_transform_fn = post_transforms()
-        else:
-            raise NotImplementedError()
-
-        transform_fn = Compose([pre_transform_fn, post_transform_fn])
-
-        def process(dict_):
-            # cast to `float` prevent internal mask scaling in albumentations
-            dict_["mask"] = dict_["mask"].astype(np.float32)
-
-            result = transform_fn(**dict_)
-            return result
-
-        return process
-
     def get_datasets(
         self,
         stage: str,
@@ -72,7 +40,6 @@ class Experiment(ConfigExperiment):
         tag_column: str = None,
         folds_seed: int = 42,
         n_folds: int = 5,
-        image_size: int = 256,
     ):
         datasets = collections.OrderedDict()
         tag2class = (
@@ -95,16 +62,16 @@ class Experiment(ConfigExperiment):
 
         open_fn = ReaderCompose(readers=[
             ImageReader(
-                input_key="images", output_key="image", datapath=datapath
+                input_key="images", output_key="image", rootpath=datapath
             ),
             MaskReader(
-                input_key="masks", output_key="mask", datapath=datapath
+                input_key="masks", output_key="mask", rootpath=datapath
             ),
             ScalarReader(
                 input_key="name",
                 output_key="name",
-                default_value=-1,
                 dtype=str,
+                default_value=-1,
             ),
         ])
 
@@ -116,7 +83,7 @@ class Experiment(ConfigExperiment):
                     list_data=source,
                     open_fn=open_fn,
                     dict_transform=self.get_transforms(
-                        stage=stage, mode=mode, image_size=image_size
+                        stage=stage, dataset=mode
                     ),
                 )
 

@@ -1,14 +1,14 @@
 import argparse
-import os
+from multiprocessing.pool import Pool
 from pathlib import Path
 
 import numpy as np
 import safitty
 
 from catalyst.utils import (
-    get_pool, imread, mimwrite_with_meta, Pool, tqdm_parallel_imap
+    get_pool, has_image_extension, imread, mimwrite_with_meta,
+    tqdm_parallel_imap
 )
-from utils import id_from_fname
 
 
 def build_args(parser):
@@ -58,7 +58,7 @@ class Preprocessor:
                 np.all((image == self.index2color[index]), axis=-1), index
             ] = 255
 
-        target_path = self.out_dir / f"{id_from_fname(image_path)}.tiff"
+        target_path = self.out_dir / f"{image_path.stem}.tiff"
         target_path.parent.mkdir(parents=True, exist_ok=True)
 
         mimwrite_with_meta(
@@ -66,7 +66,11 @@ class Preprocessor:
         )
 
     def process_all(self, pool: Pool):
-        images = os.listdir(self.in_dir)
+        images = [
+            filename
+            for filename in self.in_dir.iterdir()
+            if has_image_extension(str(filename))
+        ]
         tqdm_parallel_imap(self.preprocess, images, pool)
 
 
