@@ -1,5 +1,7 @@
 albumentations==0.4.3
+opencv-python>=4.1.1
 segmentation-models-pytorch==0.1.0
+shapely[vectorized]==1.7.0
 
 # Used in scripts
 jinja2

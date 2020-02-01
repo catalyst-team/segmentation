@@ -1,0 +1,200 @@
+shared:
+  image_size: &image_size {{ image_size }}
+
+model_params:
+  num_classes: {{ num_classes }}
+
+args:
+  expdir: {{ expdir }}
+
+runner_params:
+  input_key: image
+  input_target_key: mask
+  output_key: logits
+
+stages:
+
+  state_params:
+    main_metric: &reduce_metric iou_hard
+    minimize_metric: False
+
+  data_params:
+    num_workers: {{ num_workers }}
+    batch_size: {{ batch_size }}
+    per_gpu_scaling: True
+    in_csv_train: {{ dataset_path }}/dataset_train.csv
+    in_csv_valid: {{ dataset_path }}/dataset_valid.csv
+    datapath: {{ dataset_path }}
+
+  transform_params:
+    _key_value: True
+
+    train:
+      transform: A.Compose
+      transforms:
+        - &pre_transforms
+          transform: A.Compose
+          transforms:
+            - transform: A.LongestMaxSize
+              max_size: *image_size
+            - transform: A.PadIfNeeded
+              min_height: *image_size
+              min_width: *image_size
+              border_mode: 0  # cv2.BORDER_CONSTANT
+              value: 0
+        - &hard_transforms
+          transform: A.Compose
+          transforms:
+            - transform: A.ShiftScaleRotate
+              shift_limit: 0.1
+              scale_limit: 0.1
+              rotate_limit: 15
+              border_mode: 2  # cv2.BORDER_REFLECT
+            - transform: A.OneOf
+              transforms:
+                - transform: A.HueSaturationValue
+                - transform: A.ToGray
+                - transform: A.RGBShift
+                - transform: A.ChannelShuffle
+            - transform: A.RandomBrightnessContrast
+              brightness_limit: 0.5
+              contrast_limit: 0.5
+            - transform: A.RandomGamma
+            - transform: A.CLAHE
+            - transform: A.JpegCompression
+              quality_lower: 50
+        - &post_transforms
+          transform: A.Compose
+          transforms:
+            - transform: A.Normalize
+            - transform: C.ToTensor
+    valid:
+      transform: A.Compose
+      transforms:
+        - *pre_transforms
+        - *post_transforms
+    infer:
+      transform: A.Compose
+      transforms:
+        - *pre_transforms
+        - *post_transforms
+
+  criterion_params:
+    _key_value: True
+
+    bce:
+      criterion: BCEWithLogitsLoss
+    dice:
+      criterion: DiceLoss
+    iou:
+      criterion: IoULoss
+
+  callbacks_params:
+    loss_bce:
+      callback: CriterionCallback
+      input_key: mask
+      output_key: logits
+      prefix: loss_bce
+      criterion_key: bce
+      multiplier: 1.0
+    loss_dice:
+      callback: CriterionCallback
+      input_key: mask
+      output_key: logits
+      prefix: loss_dice
+      criterion_key: dice
+      multiplier: 1.0
+    loss_iou:
+      callback: CriterionCallback
+      input_key: mask
+      output_key: logits
+      prefix: loss_iou
+      criterion_key: iou
+      multiplier: 1.0
+
+    loss_aggregator:
+      callback: CriterionAggregatorCallback
+      prefix: &aggregated_loss loss
+      loss_aggregate_fn: "mean" # or "sum"
+      multiplier: 1.0 # scale factor for the aggregated loss
+
+    raw_processor:
+      callback: RawMaskPostprocessingCallback
+    instance_extractor:
+      callback: InstanceMaskPostprocessingCallback
+      watershed_threshold: 0.9
+      mask_threshold: 0.8
+      output_key: instance_mask
+      out_key_semantic: semantic_mask
+      out_key_border: border_mask
+
+    iou_soft:
+      callback: IouCallback
+      input_key: mask
+      output_key: logits
+      prefix: iou_soft
+    iou_hard:
+      callback: IouCallback
+      input_key: mask
+      output_key: logits
+      prefix: iou_hard
+      threshold: 0.5
+
+    optimizer:
+      callback: OptimizerCallback
+      loss_key: *aggregated_loss
+    scheduler:
+      callback: SchedulerCallback
+      reduce_metric: *reduce_metric
+    saver:
+      callback: CheckpointCallback
+
+  # infer:
+  #
+  #   data_params:
+  #     num_workers: {{ num_workers }}
+  #     batch_size: {{ batch_size }}
+  #     per_gpu_scaling: True
+  #     in_csv: null
+  #     in_csv_train: null
+  #     in_csv_valid: {{ dataset_path }}/dataset_valid.csv
+  #     in_csv_infer: {{ dataset_path }}/dataset_train.csv
+  #     datapath: {{ dataset_path }}
+  #
+  #   callbacks_params:
+  #     loader:
+  #       callback: CheckpointCallback
+  #
+  #     raw_processor:
+  #       callback: RawMaskPostprocessingCallback
+  #     instance_extractor:
+  #       callback: InstanceMaskPostprocessingCallback
+  #       watershed_threshold: 0.9
+  #       mask_threshold: 0.8
+  #       output_key: instance_mask
+  #       out_key_semantic: semantic_mask
+  #       out_key_border: border_mask
+  #
+  #     image_saver:
+  #       callback: OriginalImageSaverCallback
+  #       output_dir: infer
+  #     saver_mask:
+  #       callback: OverlayMaskImageSaverCallback
+  #       output_dir: infer
+  #       filename_suffix: _01_raw_mask
+  #       output_key: mask
+  #     saver_semantic:
+  #       callback: OverlayMaskImageSaverCallback
+  #       output_dir: infer
+  #       filename_suffix: _02_semantic_mask
+  #       output_key: semantic_mask
+  #     saver_border:
+  #       callback: OverlayMaskImageSaverCallback
+  #       output_dir: infer
+  #       filename_suffix: _03_border_mask
+  #       output_key: border_mask
+  #     saver_instance:
+  #       callback: OverlayMaskImageSaverCallback
+  #       output_dir: infer
+  #       filename_suffix: _04_instance_mask
+  #       output_key: instance_mask

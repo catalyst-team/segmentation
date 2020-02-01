@@ -4,7 +4,7 @@ import imageio
 import numpy as np
 
 from catalyst.dl import Callback, CallbackOrder, State, utils
-from .utils import mask_to_overlay_image
+from .utils import crop_by_masks, mask_to_overlay_image
 
 
 class OriginalImageSaverCallback(Callback):
@@ -81,4 +81,42 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
             imageio.imwrite(fname, image)
 
 
-__all__ = ["OriginalImageSaverCallback", "OverlayMaskImageSaverCallback"]
+class InstanceCropSaverCallback(OriginalImageSaverCallback):
+    def __init__(
+        self,
+        output_dir: str,
+        relative: bool = True,
+        filename_extension: str = ".jpg",
+        input_key: str = "image",
+        output_key: str = "mask",
+        outpath_key: str = "name",
+    ):
+        super().__init__(
+            output_dir=output_dir,
+            relative=relative,
+            filename_suffix=filename_extension,
+            input_key=input_key,
+            outpath_key=outpath_key,
+        )
+        self.output_key = output_key
+
+    def on_batch_end(self, state: State):
+        names = state.input[self.outpath_key]
+        images = utils.tensor_to_ndimage(state.input[self.input_key].cpu())
+        masks = state.output[self.output_key]
+
+        for name, image, masks_ in zip(names, images, masks):
+            instances = crop_by_masks(image, masks_)
+
+            for index, crop in enumerate(instances):
+                filename = self.get_image_path(
+                    state, name, suffix=f"_instance{index:02d}"
+                )
+                imageio.imwrite(filename, crop)
+
+
+__all__ = [
+    "OriginalImageSaverCallback",
+    "OverlayMaskImageSaverCallback",
+    "InstanceCropSaverCallback",
+]
