@@ -11,7 +11,6 @@ builtin cd "$ROOT" || exit 1
 
 git remote add 'upstream' 'https://github.com/catalyst-team/catalyst' || true
 
-
 # Only fetch master since that's the branch we're diffing against.
 git fetch upstream master
 
