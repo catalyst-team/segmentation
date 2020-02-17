@@ -25,7 +25,7 @@ def build_args(parser):
     parser.add_argument("--num-classes", default=None, type=int)
     parser.add_argument("--num-workers", default=4, type=int)
     parser.add_argument("--batch-size", default=64, type=int)
-    parser.add_argument("--image-size", default=256, type=int)
+    parser.add_argument("--max-image-size", default=256, type=int)
 
     return parser
 
@@ -45,7 +45,7 @@ def render_config(
     num_classes: int,
     num_workers: int,
     batch_size: int,
-    image_size: int,
+    max_image_size: int,
 ):
     _template_path = in_template.absolute().parent
 
@@ -70,7 +70,7 @@ def render_config(
             num_classes=num_classes,
             num_workers=num_workers,
             batch_size=batch_size,
-            image_size=image_size,
+            max_image_size=max_image_size,
         )
     )
 

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from utils import find_images_in_dir, id_from_fname
+from catalyst.utils import has_image_extension
 
 
 def build_args(parser):
@@ -48,10 +48,13 @@ def main(args, _=None):
     """
     samples = collections.defaultdict(dict)
     for key in ("images", "masks"):
-        for fname in find_images_in_dir(args.in_dir / key):
-            fname = os.path.join(key, fname)
-            sample_id = id_from_fname(fname)
-            samples[sample_id].update({"name": sample_id, key: fname})
+        for filename in (args.in_dir / key).iterdir():
+            if has_image_extension(str(filename)):
+                sample_id = filename.stem
+                samples[sample_id].update({
+                    "name": sample_id,
+                    key: str(filename),
+                })
 
     dataframe = pd.DataFrame.from_dict(samples, orient="index")
 

@@ -1,6 +1,6 @@
 import torch
 
-from catalyst.dl import Callback, CallbackOrder, RunnerState
+from catalyst.dl import Callback, CallbackOrder, State
 from .utils import encode_mask_with_color
 
 
@@ -16,10 +16,13 @@ class RawMaskPostprocessingCallback(Callback):
         self.input_key = input_key
         self.output_key = output_key
 
-    def on_batch_end(self, state: RunnerState):
+    def on_batch_end(self, state: State):
         output: torch.Tensor = torch.sigmoid(
             state.output[self.input_key].data.cpu()
         ).numpy()
 
         state.output[self.output_key] = \
             encode_mask_with_color(output, self.threshold)
+
+
+__all__ = ["RawMaskPostprocessingCallback"]

@@ -1,23 +1,29 @@
 #!/usr/bin/env bash
 set -e
 
-mkdir -p data
+mkdir -p ./data
+
+# wget http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
+# tar -xf VOCtrainval_11-May-2012.tar &>/dev/null
+# mv VOCdevkit/VOC2012 ./data/origin && \
+# mv ./data/origin/JPEGImages ./data/origin/images && \
+# mv ./data/origin/SegmentationClass ./data/origin/raw_masks
 
 download-gdrive 1MVimVlpc2u2UrZE3Dl-8D1QqG-6HNCKK voc2012_subset_cleared_191109.tar.gz
 tar -xf voc2012_subset_cleared_191109.tar.gz &>/dev/null
 mv voc2012_subset_cleared_191109 ./data/origin
 
-USE_WANDB=0 \
 CUDA_VISIBLE_DEVICES="" \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
-WORKDIR=./logs \
-DATADIR=./data/origin \
-MAX_IMAGE_SIZE=256 \
-CONFIG_TEMPLATE=./configs/templates/semantic.yml \
-NUM_WORKERS=0 \
-BATCH_SIZE=2 \
-bash ./bin/catalyst-semantic-segmentation-pipeline.sh --check
+bash ./bin/catalyst-semantic-segmentation-pipeline.sh \
+  --config-template ./configs/templates/semantic.yml \
+  --workdir ./logs \
+  --datadir ./data/origin \
+  --num-workers 0 \
+  --batch-size 2 \
+  --max-image-size 256 \
+  --check
 
 
 python -c """
