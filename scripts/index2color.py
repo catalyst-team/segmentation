@@ -45,6 +45,7 @@ def colors_in_image(uri) -> Set:
 
 
 def main(args, _=None):
+    colors = set()
     with get_pool(args.num_workers) as pool:
         images = os.listdir(args.in_dir)
         colors = tqdm_parallel_imap(colors_in_image, images, pool)
