@@ -4,7 +4,7 @@
 
 **Accelerated DL & RL**
 
-[![Build Status](http://66.248.205.49:8111/app/rest/builds/buildType:id:Catalyst_Deploy/statusIcon.svg)](http://66.248.205.49:8111/project.html?projectId=Catalyst&tab=projectOverview&guest=1)
+[![Build Status](http://66.248.205.49:8111/app/rest/builds/buildType:id:Segmentation_Tests/statusIcon.svg)](http://66.248.205.49:8111/project.html?projectId=Segmentation&tab=projectOverview&guest=1)
 [![Pipi version](https://img.shields.io/pypi/v/catalyst.svg)](https://pypi.org/project/catalyst/)
 [![Docs](https://img.shields.io/badge/dynamic/json.svg?label=docs&url=https%3A%2F%2Fpypi.org%2Fpypi%2Fcatalyst%2Fjson&query=%24.info.version&colorB=brightgreen&prefix=v)](https://catalyst-team.github.io/catalyst/index.html)
 [![PyPI Status](https://pepy.tech/badge/catalyst)](https://pepy.tech/project/catalyst)
@@ -29,7 +29,7 @@ Part of [PyTorch Ecosystem](https://pytorch.org/ecosystem/). Part of [Catalyst E
 
 ---
 
-# Catalyst.Segmentation [![Build Status](https://travis-ci.com/catalyst-team/segmentation.svg?branch=master)](https://travis-ci.com/catalyst-team/segmentation) [![Github contributors](https://img.shields.io/github/contributors/catalyst-team/segmentation.svg?logo=github&logoColor=white)](https://github.com/catalyst-team/segmentation/graphs/contributors)
+# Catalyst.Segmentation [![Build Status](http://66.248.205.49:8111/app/rest/builds/buildType:id:Segmentation_Tests/statusIcon.svg)](http://66.248.205.49:8111/project.html?projectId=Segmentation&tab=projectOverview&guest=1) [![Github contributors](https://img.shields.io/github/contributors/catalyst-team/segmentation.svg?logo=github&logoColor=white)](https://github.com/catalyst-team/segmentation/graphs/contributors)
 
 You will learn how to build image segmentation pipeline with transfer learning using the Catalyst framework.
 
