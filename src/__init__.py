@@ -21,3 +21,8 @@ except ImportError:
 from . import callbacks
 
 registry.CALLBACKS.add_from_module(callbacks)
+
+
+# @TODO: fix catalyst.contrib.registry as it doesn't load contrib.models.cv
+from catalyst.contrib.models.cv import segmentation as m
+registry.MODELS.add_from_module(m)
