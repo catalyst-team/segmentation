@@ -3,8 +3,7 @@ from pathlib import Path
 import imageio
 import numpy as np
 
-from catalyst.dl import Callback, CallbackOrder, RunnerState
-from catalyst.utils.image import tensor_to_ndimage
+from catalyst.dl import Callback, CallbackOrder, State, utils
 from .utils import mask_to_overlay_image
 
 
@@ -26,7 +25,7 @@ class OriginalImageSaverCallback(Callback):
         self.input_key = input_key
         self.outpath_key = outpath_key
 
-    def get_image_path(self, state: RunnerState, name: str, suffix: str = ""):
+    def get_image_path(self, state: State, name: str, suffix: str = ""):
         if self.relative:
             out_dir = Path(state.logdir) / self.output_dir
         else:
@@ -38,10 +37,10 @@ class OriginalImageSaverCallback(Callback):
 
         return res
 
-    def on_batch_end(self, state: RunnerState):
+    def on_batch_end(self, state: State):
         names = state.input[self.outpath_key]
         images = state.input[self.input_key].cpu()
-        images = tensor_to_ndimage(images, dtype=np.uint8)
+        images = utils.tensor_to_ndimage(images, dtype=np.uint8)
 
         for image, name in zip(images, names):
             fname = self.get_image_path(state, name, self.filename_suffix)
@@ -71,12 +70,15 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
         self.mask_strength = mask_strength
         self.output_key = output_key
 
-    def on_batch_end(self, state: RunnerState):
+    def on_batch_end(self, state: State):
         names = state.input[self.outpath_key]
-        images = tensor_to_ndimage(state.input[self.input_key].cpu())
+        images = utils.tensor_to_ndimage(state.input[self.input_key].cpu())
         masks = state.output[self.output_key]
 
         for name, image, mask in zip(names, images, masks):
             image = mask_to_overlay_image(image, mask, self.mask_strength)
             fname = self.get_image_path(state, name, self.filename_suffix)
             imageio.imwrite(fname, image)
+
+
+__all__ = ["OriginalImageSaverCallback", "OverlayMaskImageSaverCallback"]

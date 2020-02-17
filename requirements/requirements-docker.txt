@@ -1,4 +1,5 @@
 albumentations==0.4.3
+segmentation-models-pytorch==0.1.0
 
 # Used in scripts
 jinja2

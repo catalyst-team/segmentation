@@ -18,24 +18,24 @@ isort -rc --check-only --settings-path ./setup.cfg
 # stop the build if there are any unexpected flake8 issues
 echo 'flake8: `bash ./bin/_flake8.sh`'
 bash ./bin/_flake8.sh --count \
-    --config=./setup.cfg \
-    --show-source \
-    --statistics
+  --config=./setup.cfg \
+  --show-source \
+  --statistics
 
 # exit-zero treats all errors as warnings.
 echo 'flake8 (warnings): `flake8 .`'
 flake8 ./bin/_flake8.sh --count \
-    --config=./setup.cfg \
-    --max-complexity=10 \
-    --show-source \
-    --statistics \
-    --exit-zero
+  --config=./setup.cfg \
+  --max-complexity=10 \
+  --show-source \
+  --statistics \
+  --exit-zero
 
 # test to make sure the code is yapf compliant
 if [[ -f ${skip_inplace} ]]; then
-    echo 'yapf: `bash ./bin/_yapf.sh --all`'
-    bash ./bin/_yapf.sh --all
+  echo 'yapf: `bash ./bin/_yapf.sh --all`'
+  bash ./bin/_yapf.sh --all
 else
-    echo 'yapf: `bash ./bin/_yapf.sh --all-in-place`'
-    bash ./bin/_yapf.sh --all-in-place
+  echo 'yapf: `bash ./bin/_yapf.sh --all-in-place`'
+  bash ./bin/_yapf.sh --all-in-place
 fi

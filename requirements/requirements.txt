@@ -1,4 +1,4 @@
-catalyst[cv]==20.01
+catalyst[cv]==20.01.3
 
 # Used in scripts
 jinja2

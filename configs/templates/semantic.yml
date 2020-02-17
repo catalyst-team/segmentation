@@ -1,8 +1,16 @@
+shared:
+  image_size: &image_size {{ max_image_size }}
+
 model_params:
   num_classes: {{ num_classes }}
 
 args:
   expdir: {{ expdir }}
+
+runner_params:
+  input_key: image
+  input_target_key: mask
+  output_key: logits
 
 stages:
 
@@ -14,10 +22,62 @@ stages:
     num_workers: {{ num_workers }}
     batch_size: {{ batch_size }}
     per_gpu_scaling: True
-    image_size: {{ image_size }}
     in_csv_train: {{ dataset_path }}/dataset_train.csv
     in_csv_valid: {{ dataset_path }}/dataset_valid.csv
     datapath: {{ dataset_path }}
+
+  transform_params:
+    _key_value: True
+
+    train:
+      transform: A.Compose
+      transforms:
+        - &pre_transforms
+          transform: A.Compose
+          transforms:
+            - transform: A.LongestMaxSize
+              max_size: *image_size
+            - transform: A.PadIfNeeded
+              min_height: *image_size
+              min_width: *image_size
+              border_mode: 0  # cv2.BORDER_CONSTANT
+              value: 0
+        - &hard_transforms
+          transform: A.Compose
+          transforms:
+            - transform: A.ShiftScaleRotate
+              shift_limit: 0.1
+              scale_limit: 0.1
+              rotate_limit: 15
+              border_mode: 2  # cv2.BORDER_REFLECT
+            - transform: A.OneOf
+              transforms:
+                - transform: A.HueSaturationValue
+                - transform: A.ToGray
+                - transform: A.RGBShift
+                - transform: A.ChannelShuffle
+            - transform: A.RandomBrightnessContrast
+              brightness_limit: 0.5
+              contrast_limit: 0.5
+            - transform: A.RandomGamma
+            - transform: A.CLAHE
+            - transform: A.JpegCompression
+              quality_lower: 50
+        - &post_transforms
+          transform: A.Compose
+          transforms:
+            - transform: A.Normalize
+            - transform: C.ToTensor
+    valid:
+      transform: A.Compose
+      transforms:
+        - *pre_transforms
+        - *post_transforms
+    infer:
+      transform: A.Compose
+      transforms:
+        - *pre_transforms
+        - *post_transforms
 
   criterion_params:
     _key_value: True
