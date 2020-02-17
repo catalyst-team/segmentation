@@ -4,11 +4,10 @@ import collections
 import functools
 import json
 import os
-from pathlib import Path
 
 import numpy as np
 
-from catalyst.utils import get_pool, imread, Pool, tqdm_parallel_imap
+from catalyst.utils import get_pool, imread, tqdm_parallel_imap
 
 
 def build_args(parser):
@@ -19,10 +18,7 @@ def build_args(parser):
         help="Path to directory with dataset"
     )
     parser.add_argument(
-        "--out-labeling",
-        required=True,
-        type=str,
-        help="Path to output JSON"
+        "--out-labeling", required=True, type=str, help="Path to output JSON"
     )
     parser.add_argument(
         "--num-workers",
@@ -41,43 +37,27 @@ def parse_args():
     return args
 
 
-class Preprocessor:
-    def __init__(self, in_dir: Path, **kwargs):
-        self.in_dir = in_dir
-
-    def preprocess(self, image_path: Path) -> Set:
-        image = imread(image_path, rootpath=str(self.in_dir))
-
-        colors = np.unique(image.reshape(-1, image.shape[-1]), axis=0)
-
-        # np.array to hashable
-        result = {tuple(row) for row in colors.tolist()}
-
-        return result
-
-    def process_all(self, pool: Pool):
-        images = os.listdir(self.in_dir)
-        colors = tqdm_parallel_imap(self.preprocess, images, pool)
-
-        unique_colors = functools.reduce(lambda s1, s2: s1 | s2, colors)
-        index2color = collections.OrderedDict([
-            (index, color) for index, color in enumerate(sorted(unique_colors))
-        ])
-
-        return index2color
+def colors_in_image(uri) -> Set:
+    image = imread(uri, rootpath=args.in_dir)
+    colors = np.unique(image.reshape(-1, image.shape[-1]), axis=0)
+    result = {tuple(row) for row in colors.tolist()}  # np.array to hashable
+    return result
 
 
 def main(args, _=None):
-    args = args.__dict__
-    args.pop("command", None)
-    num_workers = args.pop("num_workers")
+    with get_pool(args.num_workers) as pool:
+        images = os.listdir(args.in_dir)
+        colors = tqdm_parallel_imap(colors_in_image, images, pool)
 
-    with get_pool(num_workers) as p:
-        index2color = Preprocessor(**args).process_all(p)
+    unique_colors = functools.reduce(lambda s1, s2: s1 | s2, colors)
+
+    index2color = collections.OrderedDict([
+        (index, color) for index, color in enumerate(sorted(unique_colors))
+    ])
 
     print("Num classes: ", len(index2color))
 
-    with open(args["out_labeling"], "w") as fout:
+    with open(args.out_labeling, "w") as fout:
         json.dump(index2color, fout, indent=4)
 
 
