@@ -51,7 +51,8 @@ def main(args, _=None):
     with get_pool(args.num_workers) as pool:
         images = os.listdir(args.in_dir)
         colors = tqdm_parallel_imap(colors_in_image, images, pool)
-        unique_colors = functools.reduce(lambda s1, s2: s1 | s2, colors)
+
+    unique_colors = functools.reduce(lambda s1, s2: s1 | s2, colors)
 
     index2color = collections.OrderedDict([
         (index, color) for index, color in enumerate(sorted(unique_colors))
