@@ -1,5 +1,5 @@
 shared:
-  image_size: &image_size {{ image_size }}
+  image_size: &image_size {{ max_image_size }}
 
 model_params:
   num_classes: {{ num_classes }}
