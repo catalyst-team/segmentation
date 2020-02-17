@@ -42,9 +42,8 @@ def parse_args():
 
 
 class Preprocessor:
-    def __init__(self, in_dir: Path, out_labeling: Path):
+    def __init__(self, in_dir: Path, **kwargs):
         self.in_dir = in_dir
-        self.out_labeling = out_labeling
 
     def preprocess(self, image_path: Path) -> Set:
         image = imread(image_path, rootpath=str(self.in_dir))
@@ -65,10 +64,7 @@ class Preprocessor:
             (index, color) for index, color in enumerate(sorted(unique_colors))
         ])
 
-        print("Num classes: ", len(index2color))
-
-        with open(self.out_labeling, "w") as fout:
-            json.dump(index2color, fout, indent=4)
+        return index2color
 
 
 def main(args, _=None):
@@ -77,7 +73,12 @@ def main(args, _=None):
     num_workers = args.pop("num_workers")
 
     with get_pool(num_workers) as p:
-        Preprocessor(**args).process_all(p)
+        index2color = Preprocessor(**args).process_all(p)
+
+    print("Num classes: ", len(index2color))
+
+    with open(args["out_labeling"], "w") as fout:
+        json.dump(index2color, fout, indent=4)
 
 
 if __name__ == "__main__":
