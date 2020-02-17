@@ -124,7 +124,7 @@ python ./scripts/prepare_config.py \
     --num-classes=2 \
     --num-workers=$NUM_WORKERS \
     --batch-size=$BATCH_SIZE \
-    --image-size=$IMAGE_SIZE
+    --max-image-size=$IMAGE_SIZE
 
 cp -r ./configs/_common.yml $CONFIG_DIR/_common.yml
 

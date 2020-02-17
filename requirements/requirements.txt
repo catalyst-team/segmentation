@@ -1,4 +1,4 @@
-catalyst[cv]==20.01.3
+catalyst[cv]==20.2.2
 opencv-python>=4.1.1
 shapely[vectorized]==1.7.0
 

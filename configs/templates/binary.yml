@@ -1,11 +1,16 @@
 shared:
-  image_size: &image_size {{ image_size }}
+  image_size: &image_size {{ max_image_size }}
 
 model_params:
   num_classes: {{ num_classes }}
 
 args:
   expdir: {{ expdir }}
+
+runner_params:
+  input_key: image
+  input_target_key: mask
+  output_key: logits
 
 stages:
 
