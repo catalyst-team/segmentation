@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -e
+
+# Cause the script to exit if a single command fails
+set -eo pipefail -v
 
 # Parse -s flag which tells us that we should skip inplace yapf
 echo 'parse -s flag'
@@ -14,23 +16,26 @@ echo 'isort: `isort -rc --check-only --settings-path ./setup.cfg`'
 isort -rc --check-only --settings-path ./setup.cfg
 
 # stop the build if there are any unexpected flake8 issues
-echo 'flake8: `bash ./bin/flake8.sh`'
-bash ./bin/flake8.sh --count \
+echo 'flake8: `bash ./bin/_flake8.sh`'
+bash ./bin/_flake8.sh --count \
     --config=./setup.cfg \
     --show-source \
     --statistics
 
 # exit-zero treats all errors as warnings.
 echo 'flake8 (warnings): `flake8 .`'
-flake8 . --count --exit-zero \
-    --max-complexity=10 \
+flake8 ./bin/_flake8.sh --count \
     --config=./setup.cfg \
-    --statistics
+    --max-complexity=10 \
+    --show-source \
+    --statistics \
+    --exit-zero
 
 # test to make sure the code is yapf compliant
-echo 'yapf: `bash ./bin/yapf.sh`'
 if [[ -f ${skip_inplace} ]]; then
-    bash ./bin/yapf.sh --all
+    echo 'yapf: `bash ./bin/_yapf.sh --all`'
+    bash ./bin/_yapf.sh --all
 else
-    bash ./bin/yapf.sh --all-in-place
+    echo 'yapf: `bash ./bin/_yapf.sh --all-in-place`'
+    bash ./bin/_yapf.sh --all-in-place
 fi
