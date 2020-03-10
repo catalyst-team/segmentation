@@ -3,6 +3,11 @@ model_params:
   arch: resnet18
   pretrained: True
 
+runner_params:
+  input_key: image
+  input_target_key: mask
+  output_key: logits
+
 stages:
 
   # train head

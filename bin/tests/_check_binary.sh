@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
-set -e
 
+# Cause the script to exit if a single command fails
+set -eo pipefail -v
+
+
+###################################  DATA  ####################################
+rm -rf ./data
+
+# load the data
 mkdir -p ./data
 
 download-gdrive 1uyPb9WI0t2qMKIqOjFKMv1EtfQ5FAVEI isbi_cleared_191107.tar.gz
 tar -xf isbi_cleared_191107.tar.gz &>/dev/null
 mv isbi_cleared_191107 ./data/origin
 
+
+################################  pipeline 00  ################################
+rm -rf ./logs
+
+
+################################  pipeline 01  ################################
 CUDA_VISIBLE_DEVICES="" \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
@@ -39,3 +52,7 @@ assert aggregated_loss < 1.4
 assert iou_soft > 0.25
 assert iou_hard > 0.25
 """
+
+
+################################  pipeline 99  ################################
+rm -rf ./logs

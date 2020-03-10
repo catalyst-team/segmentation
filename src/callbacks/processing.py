@@ -17,12 +17,12 @@ class RawMaskPostprocessingCallback(Callback):
         self.output_key = output_key
 
     def on_batch_end(self, state: State):
-        output: torch.Tensor = torch.sigmoid(
-            state.output[self.input_key].data.cpu()
-        ).numpy()
+        output = state.batch_out[self.input_key]
 
-        state.output[self.output_key] = \
-            encode_mask_with_color(output, self.threshold)
+        output = torch.sigmoid(output).detach().cpu().numpy()
+        state.batch_out[self.output_key] = encode_mask_with_color(
+            output, self.threshold
+        )
 
 
 __all__ = ["RawMaskPostprocessingCallback"]

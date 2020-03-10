@@ -51,9 +51,9 @@ def main(args, _=None):
 
     unique_colors = functools.reduce(lambda s1, s2: s1 | s2, colors)
 
-    index2color = collections.OrderedDict([
-        (index, color) for index, color in enumerate(sorted(unique_colors))
-    ])
+    index2color = collections.OrderedDict(
+        [(index, color) for index, color in enumerate(sorted(unique_colors))]
+    )
 
     print("Num classes: ", len(index2color))
 
