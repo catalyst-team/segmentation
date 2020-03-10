@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
-set -e
 
+# Cause the script to exit if a single command fails
+set -eo pipefail -v
+
+
+###################################  DATA  ####################################
+rm -rf ./data
+
+# load the data
 mkdir -p ./data
 
 download-gdrive 1RCqaQZLziuq1Z4sbMpwD_WHjqR5cdPvh dsb2018_cleared_191109.tar.gz
 tar -xf dsb2018_cleared_191109.tar.gz &>/dev/null
 mv dsb2018_cleared_191109 ./data/origin
 
+
+################################  pipeline 00  ################################
+rm -rf ./logs
+
+
+################################  pipeline 01  ################################
 CUDA_VISIBLE_DEVICES="" \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
@@ -39,3 +52,7 @@ assert aggregated_loss < 0.9
 assert iou_soft > 0.05
 assert iou_hard > 0.1
 """
+
+
+################################  pipeline 99  ################################
+rm -rf ./logs

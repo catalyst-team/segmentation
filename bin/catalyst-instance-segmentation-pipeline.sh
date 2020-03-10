@@ -4,7 +4,7 @@
 #author          :Sergey Kolesnikov, Yauheni Kachan
 #author_email    :scitator@gmail.com, yauheni.kachan@gmail.com
 #date            :20191109
-#version         :19.11.1
+#version         :20.03
 #==============================================================================
 
 set -e
