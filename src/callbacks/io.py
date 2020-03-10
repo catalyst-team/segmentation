@@ -17,7 +17,7 @@ class OriginalImageSaverCallback(Callback):
         input_key: str = "image",
         outpath_key: str = "name",
     ):
-        super().__init__(CallbackOrder.Other)
+        super().__init__(CallbackOrder.Logging)
         self.output_dir = Path(output_dir)
         self.relative = relative
         self.filename_suffix = filename_suffix
@@ -26,11 +26,11 @@ class OriginalImageSaverCallback(Callback):
         self.outpath_key = outpath_key
 
     def get_image_path(self, state: State, name: str, suffix: str = ""):
-        if self.relative:
-            out_dir = Path(state.logdir) / self.output_dir
-        else:
-            out_dir = self.output_dir
-
+        out_dir = (
+            state.logdir / self.output_dir
+            if self.relative
+            else self.output_dir
+        )
         out_dir.mkdir(parents=True, exist_ok=True)
 
         res = out_dir / f"{name}{suffix}{self.filename_extension}"
@@ -38,10 +38,10 @@ class OriginalImageSaverCallback(Callback):
         return res
 
     def on_batch_end(self, state: State):
-        names = state.input[self.outpath_key]
-        images = state.input[self.input_key].cpu()
-        images = utils.tensor_to_ndimage(images, dtype=np.uint8)
+        names = state.batch_in[self.outpath_key]
+        images = state.batch_in[self.input_key]
 
+        images = utils.tensor_to_ndimage(images.detach().cpu(), dtype=np.uint8)
         for image, name in zip(images, names):
             fname = self.get_image_path(state, name, self.filename_suffix)
             imageio.imwrite(fname, image)
@@ -71,10 +71,11 @@ class OverlayMaskImageSaverCallback(OriginalImageSaverCallback):
         self.output_key = output_key
 
     def on_batch_end(self, state: State):
-        names = state.input[self.outpath_key]
-        images = utils.tensor_to_ndimage(state.input[self.input_key].cpu())
-        masks = state.output[self.output_key]
+        names = state.batch_in[self.outpath_key]
+        images = state.batch_in[self.input_key]
+        masks = state.batch_out[self.output_key]
 
+        images = utils.tensor_to_ndimage(images.detach().cpu())
         for name, image, mask in zip(names, images, masks):
             image = mask_to_overlay_image(image, mask, self.mask_strength)
             fname = self.get_image_path(state, name, self.filename_suffix)

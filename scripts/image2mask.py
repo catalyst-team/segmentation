@@ -51,10 +51,12 @@ def main(args, _=None):
         for filename in (args.in_dir / key).iterdir():
             if has_image_extension(str(filename)):
                 sample_id = filename.stem
-                samples[sample_id].update({
-                    "name": sample_id,
-                    key: str(filename),
-                })
+                samples[sample_id].update(
+                    {
+                        "name": sample_id,
+                        key: str(filename),
+                    }
+                )
 
     dataframe = pd.DataFrame.from_dict(samples, orient="index")
 

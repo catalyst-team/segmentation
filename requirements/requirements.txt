@@ -1,9 +1,7 @@
-catalyst[cv]==20.2.2
-opencv-python>=4.1.1
-shapely[vectorized]==1.7.0
-
-# Used in scripts
+catalyst[cv]==20.3
 jinja2
+opencv-python>=4.1.1
 pandas>=0.22
 safitty>=1.2.3
+shapely[vectorized]==1.7.0
 tqdm>=4.33.0
