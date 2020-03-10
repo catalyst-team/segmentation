@@ -118,9 +118,6 @@ stages:
       callback: RawMaskPostprocessingCallback
       output_key: binary_mask
 
-    raw_processor:
-      callback: RawMaskPostprocessingCallback
-
     iou_soft:
       callback: IouCallback
       input_key: mask

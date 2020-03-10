@@ -49,7 +49,7 @@ print(iou_soft)
 print(iou_hard)
 
 assert aggregated_loss < 0.9
-assert iou_soft > 0.05
+assert iou_soft > 0.04
 assert iou_hard > 0.1
 """
 

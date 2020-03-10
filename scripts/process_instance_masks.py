@@ -14,10 +14,7 @@ from catalyst.utils import (
 
 def build_args(parser):
     parser.add_argument(
-        "--in-dir",
-        type=Path,
-        required=True,
-        help="Raw masks folder path"
+        "--in-dir", type=Path, required=True, help="Raw masks folder path"
     )
     parser.add_argument(
         "--out-dir",
@@ -151,10 +148,10 @@ class Preprocessor:
                     else:
                         sz = 3
 
-                uniq = np.unique(labels[
-                    max(0, y0 - sz):min(labels.shape[0], y0 + sz + 1),
-                    max(0, x0 - sz):min(labels.shape[1], x0 + sz + 1),
-                ])
+                uniq = np.unique(
+                    labels[max(0, y0 - sz):min(labels.shape[0], y0 + sz + 1),
+                           max(0, x0 - sz):min(labels.shape[1], x0 + sz + 1)]
+                )
                 if len(uniq[uniq > 0]) > 1:
                     borders[y0, x0] = 255
                     mask_without_borders[y0, x0] = 0

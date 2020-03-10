@@ -10,7 +10,7 @@ args:
 stages:
 
   state_params:
-    main_metric: &reduce_metric iou_hard
+    main_metric: &reduced_metric iou_hard
     minimize_metric: False
 
   data_params:
@@ -56,7 +56,7 @@ stages:
               contrast_limit: 0.5
             - transform: A.RandomGamma
             - transform: A.CLAHE
-            - transform: A.JpegCompression
+            - transform: A.ImageCompression
               quality_lower: 50
         - &post_transforms
           transform: A.Compose
@@ -108,10 +108,11 @@ stages:
       multiplier: 1.0
 
     loss_aggregator:
-      callback: CriterionAggregatorCallback
+      callback: MetricAggregationCallback
       prefix: &aggregated_loss loss
-      loss_aggregate_fn: "mean" # or "sum"
-      multiplier: 1.0 # scale factor for the aggregated loss
+      metrics: [loss_bce, loss_dice, loss_iou]
+      mode: "mean"
+      multiplier: 1.0
 
     raw_processor:
       callback: RawMaskPostprocessingCallback
@@ -140,7 +141,7 @@ stages:
       loss_key: *aggregated_loss
     scheduler:
       callback: SchedulerCallback
-      reduce_metric: *reduce_metric
+      reduced_metric: *reduced_metric
     saver:
       callback: CheckpointCallback
 

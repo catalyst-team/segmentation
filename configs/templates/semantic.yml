@@ -118,10 +118,6 @@ stages:
       callback: RawMaskPostprocessingCallback
       output_key: semantic_mask
 
-    raw_processor:
-      callback: RawMaskPostprocessingCallback
-      output_key: semantic_mask
-
     iou_soft:
       callback: IouCallback
       input_key: mask
