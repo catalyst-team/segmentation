@@ -5,4 +5,4 @@ set -eo pipefail -v
 
 pip install -r requirements/requirements.txt
 
-bash ./bin/tests/_check_instance.sh
+bash ./bin/tests/check_instance.sh
