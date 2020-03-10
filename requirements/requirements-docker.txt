@@ -1,8 +1,6 @@
-albumentations==0.4.3
-segmentation-models-pytorch==0.1.0
-
-# Used in scripts
+albumentations==0.4.5
 jinja2
 pandas>=0.22
 safitty>=1.2.3
+segmentation-models-pytorch==0.1.0
 tqdm>=4.33.0

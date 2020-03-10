@@ -60,20 +60,22 @@ class Experiment(ConfigExperiment):
             n_folds=n_folds,
         )
 
-        open_fn = ReaderCompose(readers=[
-            ImageReader(
-                input_key="images", output_key="image", rootpath=datapath
-            ),
-            MaskReader(
-                input_key="masks", output_key="mask", rootpath=datapath
-            ),
-            ScalarReader(
-                input_key="name",
-                output_key="name",
-                dtype=str,
-                default_value=-1,
-            ),
-        ])
+        open_fn = ReaderCompose(
+            readers=[
+                ImageReader(
+                    input_key="images", output_key="image", rootpath=datapath
+                ),
+                MaskReader(
+                    input_key="masks", output_key="mask", rootpath=datapath
+                ),
+                ScalarReader(
+                    input_key="name",
+                    output_key="name",
+                    dtype=str,
+                    default_value=-1,
+                ),
+            ]
+        )
 
         for mode, source in zip(
             ("train", "valid", "infer"), (df_train, df_valid, df_infer)

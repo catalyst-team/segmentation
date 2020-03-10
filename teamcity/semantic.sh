@@ -1,7 +1,8 @@
-echo "pip install -r requirements/requirements.txt"
+#!/usr/bin/env bash
+
+# Cause the script to exit if a single command fails
+set -eo pipefail -v
+
 pip install -r requirements/requirements.txt
 
-echo "bash ./bin/tests/_check_semantic.sh"
 bash ./bin/tests/_check_semantic.sh
-
-rm -rf ./data ./logs

@@ -46,17 +46,17 @@ class Preprocessor:
 
         index2color = safitty.load(args.index2color)
         self.index2color = {
-            int(key): tuple(value) for key, value in index2color.items()
+            int(key): tuple(value)
+            for key, value in index2color.items()
         }
 
     def preprocess(self, image_path: Path):
         image = imread(image_path, rootpath=str(self.in_dir))
         heigth, width = image.shape[:2]
+
         mask = np.zeros((heigth, width, len(self.index2color)), dtype=np.uint8)
-        for index in range(len(self.index2color)):
-            mask[
-                np.all((image == self.index2color[index]), axis=-1), index
-            ] = 255
+        for index, color in self.index2color.items():
+            mask[np.all((image == color), axis=-1), index] = 255
 
         target_path = self.out_dir / f"{image_path.stem}.tiff"
         target_path.parent.mkdir(parents=True, exist_ok=True)
@@ -67,8 +67,7 @@ class Preprocessor:
 
     def process_all(self, pool: Pool):
         images = [
-            filename
-            for filename in self.in_dir.iterdir()
+            filename for filename in self.in_dir.iterdir()
             if has_image_extension(str(filename))
         ]
         tqdm_parallel_imap(self.preprocess, images, pool)
