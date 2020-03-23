@@ -1,4 +1,4 @@
-catalyst[cv]==20.3
+catalyst[cv]==20.3.3
 jinja2
 pandas>=0.22
 safitty>=1.2.3
