@@ -52,7 +52,7 @@ def render_config(
     _env = Environment(
         loader=FileSystemLoader([str(_template_path)]),
         trim_blocks=True,
-        lstrip_blocks=True
+        lstrip_blocks=True,
     )
 
     template = _env.get_template(in_template.name)

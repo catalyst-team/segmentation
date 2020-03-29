@@ -6,8 +6,11 @@ import numpy as np
 import safitty
 
 from catalyst.contrib.utils import (
-    get_pool, has_image_extension, imread, mimwrite_with_meta,
-    tqdm_parallel_imap
+    get_pool,
+    has_image_extension,
+    imread,
+    mimwrite_with_meta,
+    tqdm_parallel_imap,
 )
 
 
@@ -19,14 +22,14 @@ def build_args(parser):
         "--out-dir",
         required=True,
         type=Path,
-        help="Processed masks folder path"
+        help="Processed masks folder path",
     )
     parser.add_argument("--index2color", required=True, type=Path)
     parser.add_argument(
         "--num-workers",
         default=1,
         type=int,
-        help="Number of workers to parallel the processing"
+        help="Number of workers to parallel the processing",
     )
 
     return parser
@@ -46,8 +49,7 @@ class Preprocessor:
 
         index2color = safitty.load(args.index2color)
         self.index2color = {
-            int(key): tuple(value)
-            for key, value in index2color.items()
+            int(key): tuple(value) for key, value in index2color.items()
         }
 
     def preprocess(self, image_path: Path):
@@ -67,7 +69,8 @@ class Preprocessor:
 
     def process_all(self, pool: Pool):
         images = [
-            filename for filename in self.in_dir.iterdir()
+            filename
+            for filename in self.in_dir.iterdir()
             if has_image_extension(str(filename))
         ]
         tqdm_parallel_imap(self.preprocess, images, pool)
