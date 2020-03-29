@@ -4,11 +4,11 @@ import json
 import torch
 import torch.nn as nn
 
+from catalyst.contrib.utils.pandas import read_csv_data
 from catalyst.data import (
     ImageReader, ListDataset, MaskReader, ReaderCompose, ScalarReader
 )
 from catalyst.dl import ConfigExperiment
-from catalyst.utils.pandas import read_csv_data
 
 
 class Experiment(ConfigExperiment):

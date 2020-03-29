@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import safitty
 
-from catalyst.utils import (
+from catalyst.contrib.utils import (
     get_pool, has_image_extension, imread, mimwrite_with_meta,
     tqdm_parallel_imap
 )

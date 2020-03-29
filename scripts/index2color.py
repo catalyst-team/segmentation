@@ -7,7 +7,7 @@ import os
 
 import numpy as np
 
-from catalyst.utils import get_pool, imread, tqdm_parallel_imap
+from catalyst.contrib.utils import get_pool, imread, tqdm_parallel_imap
 
 
 def build_args(parser):
