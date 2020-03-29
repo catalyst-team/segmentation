@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from catalyst.utils import has_image_extension
+from catalyst.contrib.utils import has_image_extension
 
 
 def build_args(parser):
