@@ -227,35 +227,32 @@ We will initialize [Unet](https://arxiv.org/abs/1505.04597) model with a pre-tra
 CUDA_VISIBLE_DEVICES=0 \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
-WORKDIR=./logs \
-DATADIR=./data/origin \
-IMAGE_SIZE=256 \
-CONFIG_TEMPLATE=./configs/templates/binary.yml \
-NUM_WORKERS=4 \
-BATCH_SIZE=256 \
-bash ./bin/catalyst-binary-segmentation-pipeline.sh
+bash ./bin/catalyst-binary-segmentation-pipeline.sh \
+    --workdir ./logs \
+    --datadir ./data/origin \
+    --max-image-size 256 \
+    --config-template ./configs/templates/binary.yml \
+    --num-workers 4 \
+    --batch-size 256
 ```
 
 #### Run in docker:
 
 ```bash
-export LOGDIR=$(pwd)/logs
 docker run -it --rm --shm-size 8G --runtime=nvidia \
-   -v $(pwd):/workspace/ \
-   -v $LOGDIR:/logdir/ \
-   -v $(pwd)/data/origin:/data \
-   -e "CUDA_VISIBLE_DEVICES=0" \
-   -e "USE_WANDB=1" \
-   -e "LOGDIR=/logdir" \
-   -e "CUDNN_BENCHMARK='True'" \
-   -e "CUDNN_DETERMINISTIC='True'" \
-   -e "WORKDIR=/logdir" \
-   -e "DATADIR=/data" \
-   -e "IMAGE_SIZE=256" \
-   -e "CONFIG_TEMPLATE=./configs/templates/binary.yml" \
-   -e "NUM_WORKERS=4" \
-   -e "BATCH_SIZE=256" \
-   catalyst-segmentation ./bin/catalyst-binary-segmentation-pipeline.sh
+    -v $(pwd):/workspace/ \
+    -v $(pwd)/logs:/logdir/ \
+    -v $(pwd)/data/origin:/data \
+    -e "CUDA_VISIBLE_DEVICES=0" \
+    -e "CUDNN_BENCHMARK='True'" \
+    -e "CUDNN_DETERMINISTIC='True'" \
+    catalyst-segmentation ./bin/catalyst-binary-segmentation-pipeline.sh \
+        --workdir /logdir \
+        --datadir /data \
+        --max-image-size 256 \
+        --config-template ./configs/templates/binary.yml \
+        --num-workers 4 \
+        --batch-size 256
 ```
 
 </p>
@@ -271,35 +268,32 @@ docker run -it --rm --shm-size 8G --runtime=nvidia \
 CUDA_VISIBLE_DEVICES=0 \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
-WORKDIR=./logs \
-DATADIR=./data/origin \
-IMAGE_SIZE=256 \
-CONFIG_TEMPLATE=./configs/templates/semantic.yml \
-NUM_WORKERS=4 \
-BATCH_SIZE=256 \
-bash ./bin/catalyst-semantic-segmentation-pipeline.sh
+bash ./bin/catalyst-semantic-segmentation-pipeline.sh \
+    --workdir ./logs \
+    --datadir ./data/origin \
+    --max-image-size 256 \
+    --config-template ./configs/templates/semantic.yml \
+    --num-workers 4 \
+    --batch-size 256
 ```
 
 #### Run in docker:
 
 ```bash
-export LOGDIR=$(pwd)/logs
 docker run -it --rm --shm-size 8G --runtime=nvidia \
-   -v $(pwd):/workspace/ \
-   -v $LOGDIR:/logdir/ \
-   -v $(pwd)/data/origin:/data \
-   -e "CUDA_VISIBLE_DEVICES=0" \
-   -e "USE_WANDB=1" \
-   -e "LOGDIR=/logdir" \
-   -e "CUDNN_BENCHMARK='True'" \
-   -e "CUDNN_DETERMINISTIC='True'" \
-   -e "WORKDIR=/logdir" \
-   -e "DATADIR=/data" \
-   -e "IMAGE_SIZE=256" \
-   -e "CONFIG_TEMPLATE=./configs/templates/semantic.yml" \
-   -e "NUM_WORKERS=4" \
-   -e "BATCH_SIZE=256" \
-   catalyst-segmentation ./bin/catalyst-semantic-segmentation-pipeline.sh
+    -v $(pwd):/workspace/ \
+    -v $(pwd)/logs:/logdir/ \
+    -v $(pwd)/data/origin:/data \
+    -e "CUDA_VISIBLE_DEVICES=0" \
+    -e "CUDNN_BENCHMARK='True'" \
+    -e "CUDNN_DETERMINISTIC='True'" \
+    catalyst-segmentation ./bin/catalyst-semantic-segmentation-pipeline.sh \
+        --workdir /logdir \
+        --datadir /data \
+        --max-image-size 256 \
+        --config-template ./configs/templates/semantic.yml \
+        --num-workers 4 \
+        --batch-size 256
 ```
 
 </p>
@@ -315,35 +309,32 @@ docker run -it --rm --shm-size 8G --runtime=nvidia \
 CUDA_VISIBLE_DEVICES=0 \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
-WORKDIR=./logs \
-DATADIR=./data/origin \
-IMAGE_SIZE=256 \
-CONFIG_TEMPLATE=./configs/templates/instance.yml \
-NUM_WORKERS=4 \
-BATCH_SIZE=256 \
-bash ./bin/catalyst-instance-segmentation-pipeline.sh
+bash ./bin/catalyst-semantic-segmentation-pipeline.sh \
+    --workdir ./logs \
+    --datadir ./data/origin \
+    --max-image-size 256 \
+    --config-template ./configs/templates/instance.yml \
+    --num-workers 4 \
+    --batch-size 256
 ```
 
 #### Run in docker:
 
 ```bash
-export LOGDIR=$(pwd)/logs
 docker run -it --rm --shm-size 8G --runtime=nvidia \
-   -v $(pwd):/workspace/ \
-   -v $LOGDIR:/logdir/ \
-   -v $(pwd)/data/origin:/data \
-   -e "CUDA_VISIBLE_DEVICES=0" \
-   -e "USE_WANDB=1" \
-   -e "LOGDIR=/logdir" \
-   -e "CUDNN_BENCHMARK='True'" \
-   -e "CUDNN_DETERMINISTIC='True'" \
-   -e "WORKDIR=/logdir" \
-   -e "DATADIR=/data" \
-   -e "IMAGE_SIZE=256" \
-   -e "CONFIG_TEMPLATE=./configs/templates/instance.yml" \
-   -e "NUM_WORKERS=4" \
-   -e "BATCH_SIZE=256" \
-   catalyst-segmentation ./bin/catalyst-instance-segmentation-pipeline.sh
+    -v $(pwd):/workspace/ \
+    -v $(pwd)/logs:/logdir/ \
+    -v $(pwd)/data/origin:/data \
+    -e "CUDA_VISIBLE_DEVICES=0" \
+    -e "CUDNN_BENCHMARK='True'" \
+    -e "CUDNN_DETERMINISTIC='True'" \
+    catalyst-segmentation ./bin/catalyst-instance-segmentation-pipeline.sh \
+        --workdir /logdir \
+        --datadir /data \
+        --max-image-size 256 \
+        --config-template ./configs/templates/instance.yml \
+        --num-workers 4 \
+        --batch-size 256
 ```
 
 </p>
@@ -353,16 +344,7 @@ The pipeline is running and you don’t have to do anything else, it remains to 
 
 #### Visualizations
 
-You can use [W&B](https://www.wandb.com/) account for visualisation right after `pip install wandb`:
-
-```
-wandb: (1) Create a W&B account
-wandb: (2) Use an existing W&B account
-wandb: (3) Don't visualize my results
-```
-<img src="/pics/wandb_metrics.png" title="w&b binary segmentation metrics"  align="left">
-
-Tensorboard also can be used for visualisation:
+Tensorboard can be used for visualisation:
 
 ```bash
 tensorboard --logdir=/catalyst.segmentation/logs
@@ -396,7 +378,7 @@ For your future experiments framework provides powerful configs allow to optimiz
 
 * Common settings of stages of training and model parameters can be found in `catalyst.segmentation/configs/_common.yml`.
     * `model_params`: detailed configuration of models, including:
-        * model, for instance `ResnetUnet`
+        * model, for instance `ResNetUnet`
         * detailed architecture description
         * using pretrained model
     * `stages`: you can configure training or inference in several stages with different hyperparameters. In our example:
