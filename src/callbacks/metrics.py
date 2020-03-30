@@ -16,10 +16,9 @@ def compute_ious_single_image(predicted_mask, gt_instance_masks):
 
         predicted_instance_mask = predicted_mask == id_
 
-        sum_ = (
-            predicted_instance_mask.reshape(1, -1) +
-            gt_instance_masks.reshape(n_gt_instaces, -1)
-        )
+        sum_ = predicted_instance_mask.reshape(
+            1, -1
+        ) + gt_instance_masks.reshape(n_gt_instaces, -1)
 
         intersection = (sum_ == 2).sum(axis=1)
         union = (sum_ > 0).sum(axis=1)

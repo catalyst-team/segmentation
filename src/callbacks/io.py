@@ -4,6 +4,7 @@ import imageio
 import numpy as np
 
 from catalyst.dl import Callback, CallbackNode, CallbackOrder, State, utils
+
 from .utils import crop_by_masks, mask_to_overlay_image
 
 
@@ -27,9 +28,7 @@ class OriginalImageSaverCallback(Callback):
 
     def get_image_path(self, state: State, name: str, suffix: str = ""):
         out_dir = (
-            state.logdir / self.output_dir
-            if self.relative
-            else self.output_dir
+            state.logdir / self.output_dir if self.relative else self.output_dir
         )
         out_dir.mkdir(parents=True, exist_ok=True)
 

@@ -7,7 +7,7 @@ import os
 
 import numpy as np
 
-from catalyst.utils import get_pool, imread, tqdm_parallel_imap
+from catalyst.contrib.utils import get_pool, imread, tqdm_parallel_imap
 
 
 def build_args(parser):
@@ -15,7 +15,7 @@ def build_args(parser):
         "--in-dir",
         required=True,
         type=str,
-        help="Path to directory with dataset"
+        help="Path to directory with dataset",
     )
     parser.add_argument(
         "--out-labeling", required=True, type=str, help="Path to output JSON"
@@ -24,7 +24,7 @@ def build_args(parser):
         "--num-workers",
         default=1,
         type=int,
-        help="Number of workers to parallel the processing"
+        help="Number of workers to parallel the processing",
     )
 
     return parser

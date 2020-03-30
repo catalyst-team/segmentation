@@ -1,6 +1,7 @@
 import torch
 
 from catalyst.dl import Callback, CallbackNode, CallbackOrder, State
+
 from .utils import encode_mask_with_color, label_instances
 
 

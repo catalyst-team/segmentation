@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from catalyst.utils import has_image_extension
+from catalyst.contrib.utils import has_image_extension
 
 
 def build_args(parser):
@@ -13,13 +13,13 @@ def build_args(parser):
         "--in-dir",
         required=True,
         type=Path,
-        help="Path to directory with dataset"
+        help="Path to directory with dataset",
     )
     parser.add_argument(
         "--out-dataset",
         required=True,
         type=Path,
-        help="Path to output dataframe"
+        help="Path to output dataframe",
     )
 
     return parser
@@ -52,10 +52,7 @@ def main(args, _=None):
             if has_image_extension(str(filename)):
                 sample_id = filename.stem
                 samples[sample_id].update(
-                    {
-                        "name": sample_id,
-                        key: str(filename),
-                    }
+                    {"name": sample_id, key: str(filename)}
                 )
 
     dataframe = pd.DataFrame.from_dict(samples, orient="index")

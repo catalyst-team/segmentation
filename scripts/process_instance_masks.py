@@ -7,8 +7,11 @@ import numpy as np
 from skimage import measure, morphology
 
 from catalyst.utils import (
-    get_pool, has_image_extension, imread, mimwrite_with_meta,
-    tqdm_parallel_imap
+    get_pool,
+    has_image_extension,
+    imread,
+    mimwrite_with_meta,
+    tqdm_parallel_imap,
 )
 
 
@@ -20,7 +23,7 @@ def build_args(parser):
         "--out-dir",
         type=Path,
         required=True,
-        help="Processed masks folder path"
+        help="Processed masks folder path",
     )
     parser.add_argument("--threshold", type=float, default=0.0)
     parser.add_argument(
@@ -28,13 +31,13 @@ def build_args(parser):
         type=int,
         choices={2, 3},
         default=2,
-        help="Number of channels in output masks"
+        help="Number of channels in output masks",
     )
     parser.add_argument(
         "--num-workers",
         default=1,
         type=int,
-        help="Number of workers to parallel the processing"
+        help="Number of workers to parallel the processing",
     )
 
     return parser
@@ -53,9 +56,7 @@ def mim_interaction(mim: List[np.ndarray], threshold: float = 0) -> np.ndarray:
     return result
 
 
-def mim_color_encode(
-    mim: List[np.ndarray], threshold: float = 0
-) -> np.ndarray:
+def mim_color_encode(mim: List[np.ndarray], threshold: float = 0) -> np.ndarray:
     result = np.zeros_like(mim[0], dtype=np.uint8)
     for index, im in enumerate(mim, start=1):
         result[im > threshold] = index
@@ -101,7 +102,7 @@ class Preprocessor:
                         `-- sample_M.tiff  # image of shape HxWxZ
             threshold (float):
             n_channels (int): number of channels in output masks,
-                see https://www.kaggle.com/c/data-science-bowl-2018/discussion/54741  # noqa: E501
+                see https://www.kaggle.com/c/data-science-bowl-2018/discussion/54741  # noqa: E501, W505
         """
         self.in_dir = in_dir
         self.out_dir = out_dir
@@ -117,9 +118,12 @@ class Preprocessor:
         labels = mim_color_encode(masks, self.threshold)
 
         scaled_blobs = morphology.dilation(labels > 0, morphology.square(9))
-        watersheded_blobs = morphology.watershed(
-            scaled_blobs, labels, mask=scaled_blobs, watershed_line=True
-        ) > 0
+        watersheded_blobs = (
+            morphology.watershed(
+                scaled_blobs, labels, mask=scaled_blobs, watershed_line=True
+            )
+            > 0
+        )
         watershed_lines = scaled_blobs ^ (watersheded_blobs)
         scaled_watershed_lines = morphology.dilation(
             watershed_lines, morphology.square(7)
@@ -149,8 +153,10 @@ class Preprocessor:
                         sz = 3
 
                 uniq = np.unique(
-                    labels[max(0, y0 - sz):min(labels.shape[0], y0 + sz + 1),
-                           max(0, x0 - sz):min(labels.shape[1], x0 + sz + 1)]
+                    labels[
+                        max(0, y0 - sz) : min(labels.shape[0], y0 + sz + 1),
+                        max(0, x0 - sz) : min(labels.shape[1], x0 + sz + 1),
+                    ]
                 )
                 if len(uniq[uniq > 0]) > 1:
                     borders[y0, x0] = 255

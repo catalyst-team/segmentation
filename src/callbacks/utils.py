@@ -77,7 +77,10 @@ def label_instances(
             scale_factor=scaling,
             mode=interpolation,
             align_corners=False,
-        ).squeeze(-3).numpy() for mask in (semantic_masks, bordered_masks)
+        )
+        .squeeze(-3)
+        .numpy()
+        for mask in (semantic_masks, bordered_masks)
     )
 
     result: List[np.ndarray] = []
