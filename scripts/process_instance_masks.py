@@ -56,7 +56,9 @@ def mim_interaction(mim: List[np.ndarray], threshold: float = 0) -> np.ndarray:
     return result
 
 
-def mim_color_encode(mim: List[np.ndarray], threshold: float = 0) -> np.ndarray:
+def mim_color_encode(
+    mim: List[np.ndarray], threshold: float = 0
+) -> np.ndarray:
     result = np.zeros_like(mim[0], dtype=np.uint8)
     for index, im in enumerate(mim, start=1):
         result[im > threshold] = index
