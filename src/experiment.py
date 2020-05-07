@@ -4,14 +4,9 @@ import json
 import torch
 from torch import nn
 
+from catalyst.contrib.data.cv import ImageReader, MaskReader
 from catalyst.contrib.utils.pandas import read_csv_data
-from catalyst.data import (
-    ImageReader,
-    ListDataset,
-    MaskReader,
-    ReaderCompose,
-    ScalarReader,
-)
+from catalyst.data import ListDataset, ReaderCompose, ScalarReader
 from catalyst.dl import ConfigExperiment
 
 
