@@ -87,6 +87,12 @@ elif [[ "$DATASET" == "voc2012" ]]; then
     tar -xf VOCtrainval_11-May-2012.tar &>/dev/null
     mkdir -p ./data/origin/images/; mv VOCdevkit/VOC2012/JPEGImages/* $_
     mkdir -p ./data/origin/raw_masks; mv VOCdevkit/VOC2012/SegmentationClass/* $_
+elif [[ "$DATASET" == "dsb2018" ]]; then
+    # instance segmentation
+    # https://www.kaggle.com/c/data-science-bowl-2018
+    download-gdrive 1RCqaQZLziuq1Z4sbMpwD_WHjqR5cdPvh dsb2018_cleared_191109.tar.gz
+    tar -xf dsb2018_cleared_191109.tar.gz &>/dev/null
+    mv dsb2018_cleared_191109 ./data/origin
 fi
 ```
 
@@ -102,6 +108,11 @@ fi
 #### Data structure
 
 Make sure, that final folder with data has the required structure:
+
+<details open>
+<summary>Data structure for binary segmentation</summary>
+<p>
+
 ```bash
 /path/to/your_dataset/
         images/
@@ -115,6 +126,66 @@ Make sure, that final folder with data has the required structure:
             ...
             mask_N
 ```
+where each `mask` is a binary image
+
+</p>
+</details>
+
+<details>
+<summary>Data structure for semantic segmentation</summary>
+<p>
+
+```bash
+/path/to/your_dataset/
+        images/
+            image_1
+            image_2
+            ...
+            image_N
+        raw_masks/
+            mask_1
+            mask_2
+            ...
+            mask_N
+```
+where each `mask` is an image with class encoded through colors e.g. [VOC2012](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/) dataset where `bicycle` class is encoded with <span style="color:rgb(0, 128, 0)">green</span> color and `bird` with <span style="color:rgb(128, 128, 0)">olive</span>
+
+</p>
+</details>
+
+<details>
+<summary>Data structure for instance segmentation</summary>
+<p>
+
+```bash
+/path/to/your_dataset/
+        images/
+            image_1
+            image_2
+            ...
+            image_M
+        raw_masks/
+            mask_1/
+                instance_1
+                instance_2
+                ...
+                instance_N
+            mask_2/
+                instance_1
+                instance_2
+                ...
+                instance_K
+            ...
+            mask_M/
+                instance_1
+                instance_2
+                ...
+                instance_Z
+```
+where each `mask` represented as a folder with instances images (one image per instance), and masks may consisting of a different number of instances e.g. [Data Science Bowl 2018](https://www.kaggle.com/c/data-science-bowl-2018) dataset
+
+</p>
+</details>
 
 #### Data location
 
@@ -161,35 +232,32 @@ We will initialize [Unet](https://arxiv.org/abs/1505.04597) model with a pre-tra
 CUDA_VISIBLE_DEVICES=0 \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
-WORKDIR=./logs \
-DATADIR=./data/origin \
-IMAGE_SIZE=256 \
-CONFIG_TEMPLATE=./configs/templates/binary.yml \
-NUM_WORKERS=4 \
-BATCH_SIZE=256 \
-bash ./bin/catalyst-binary-segmentation-pipeline.sh
+bash ./bin/catalyst-binary-segmentation-pipeline.sh \
+    --workdir ./logs \
+    --datadir ./data/origin \
+    --max-image-size 256 \
+    --config-template ./configs/templates/binary.yml \
+    --num-workers 4 \
+    --batch-size 256
 ```
 
 #### Run in docker:
 
 ```bash
-export LOGDIR=$(pwd)/logs
 docker run -it --rm --shm-size 8G --runtime=nvidia \
-   -v $(pwd):/workspace/ \
-   -v $LOGDIR:/logdir/ \
-   -v $(pwd)/data/origin:/data \
-   -e "CUDA_VISIBLE_DEVICES=0" \
-   -e "USE_WANDB=1" \
-   -e "LOGDIR=/logdir" \
-   -e "CUDNN_BENCHMARK='True'" \
-   -e "CUDNN_DETERMINISTIC='True'" \
-   -e "WORKDIR=/logdir" \
-   -e "DATADIR=/data" \
-   -e "IMAGE_SIZE=256" \
-   -e "CONFIG_TEMPLATE=./configs/templates/binary.yml" \
-   -e "NUM_WORKERS=4" \
-   -e "BATCH_SIZE=256" \
-   catalyst-segmentation ./bin/catalyst-binary-segmentation-pipeline.sh
+    -v $(pwd):/workspace/ \
+    -v $(pwd)/logs:/logdir/ \
+    -v $(pwd)/data/origin:/data \
+    -e "CUDA_VISIBLE_DEVICES=0" \
+    -e "CUDNN_BENCHMARK='True'" \
+    -e "CUDNN_DETERMINISTIC='True'" \
+    catalyst-segmentation ./bin/catalyst-binary-segmentation-pipeline.sh \
+        --workdir /logdir \
+        --datadir /data \
+        --max-image-size 256 \
+        --config-template ./configs/templates/binary.yml \
+        --num-workers 4 \
+        --batch-size 256
 ```
 
 </p>
@@ -205,35 +273,73 @@ docker run -it --rm --shm-size 8G --runtime=nvidia \
 CUDA_VISIBLE_DEVICES=0 \
 CUDNN_BENCHMARK="True" \
 CUDNN_DETERMINISTIC="True" \
-WORKDIR=./logs \
-DATADIR=./data/origin \
-IMAGE_SIZE=256 \
-CONFIG_TEMPLATE=./configs/templates/semantic.yml \
-NUM_WORKERS=4 \
-BATCH_SIZE=256 \
-bash ./bin/catalyst-semantic-segmentation-pipeline.sh
+bash ./bin/catalyst-semantic-segmentation-pipeline.sh \
+    --workdir ./logs \
+    --datadir ./data/origin \
+    --max-image-size 256 \
+    --config-template ./configs/templates/semantic.yml \
+    --num-workers 4 \
+    --batch-size 256
 ```
 
 #### Run in docker:
 
 ```bash
-export LOGDIR=$(pwd)/logs
 docker run -it --rm --shm-size 8G --runtime=nvidia \
-   -v $(pwd):/workspace/ \
-   -v $LOGDIR:/logdir/ \
-   -v $(pwd)/data/origin:/data \
-   -e "CUDA_VISIBLE_DEVICES=0" \
-   -e "USE_WANDB=1" \
-   -e "LOGDIR=/logdir" \
-   -e "CUDNN_BENCHMARK='True'" \
-   -e "CUDNN_DETERMINISTIC='True'" \
-   -e "WORKDIR=/logdir" \
-   -e "DATADIR=/data" \
-   -e "IMAGE_SIZE=256" \
-   -e "CONFIG_TEMPLATE=./configs/templates/semantic.yml" \
-   -e "NUM_WORKERS=4" \
-   -e "BATCH_SIZE=256" \
-   catalyst-segmentation ./bin/catalyst-semantic-segmentation-pipeline.sh
+    -v $(pwd):/workspace/ \
+    -v $(pwd)/logs:/logdir/ \
+    -v $(pwd)/data/origin:/data \
+    -e "CUDA_VISIBLE_DEVICES=0" \
+    -e "CUDNN_BENCHMARK='True'" \
+    -e "CUDNN_DETERMINISTIC='True'" \
+    catalyst-segmentation ./bin/catalyst-semantic-segmentation-pipeline.sh \
+        --workdir /logdir \
+        --datadir /data \
+        --max-image-size 256 \
+        --config-template ./configs/templates/semantic.yml \
+        --num-workers 4 \
+        --batch-size 256
+```
+
+</p>
+</details>
+
+<details>
+<summary>Instance segmentation pipeline</summary>
+<p>
+
+#### Run in local environment:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 \
+CUDNN_BENCHMARK="True" \
+CUDNN_DETERMINISTIC="True" \
+bash ./bin/catalyst-semantic-segmentation-pipeline.sh \
+    --workdir ./logs \
+    --datadir ./data/origin \
+    --max-image-size 256 \
+    --config-template ./configs/templates/instance.yml \
+    --num-workers 4 \
+    --batch-size 256
+```
+
+#### Run in docker:
+
+```bash
+docker run -it --rm --shm-size 8G --runtime=nvidia \
+    -v $(pwd):/workspace/ \
+    -v $(pwd)/logs:/logdir/ \
+    -v $(pwd)/data/origin:/data \
+    -e "CUDA_VISIBLE_DEVICES=0" \
+    -e "CUDNN_BENCHMARK='True'" \
+    -e "CUDNN_DETERMINISTIC='True'" \
+    catalyst-segmentation ./bin/catalyst-instance-segmentation-pipeline.sh \
+        --workdir /logdir \
+        --datadir /data \
+        --max-image-size 256 \
+        --config-template ./configs/templates/instance.yml \
+        --num-workers 4 \
+        --batch-size 256
 ```
 
 </p>
@@ -243,16 +349,7 @@ The pipeline is running and you don’t have to do anything else, it remains to 
 
 #### Visualizations
 
-You can use [W&B](https://www.wandb.com/) account for visualisation right after `pip install wandb`:
-
-```
-wandb: (1) Create a W&B account
-wandb: (2) Use an existing W&B account
-wandb: (3) Don't visualize my results
-```
-<img src="/pics/wandb_metrics.png" title="w&b binary segmentation metrics"  align="left">
-
-Tensorboard also can be used for visualisation:
+Tensorboard can be used for visualisation:
 
 ```bash
 tensorboard --logdir=/catalyst.segmentation/logs
@@ -286,7 +383,7 @@ For your future experiments framework provides powerful configs allow to optimiz
 
 * Common settings of stages of training and model parameters can be found in `catalyst.segmentation/configs/_common.yml`.
     * `model_params`: detailed configuration of models, including:
-        * model, for instance `ResnetUnet`
+        * model, for instance `ResNetUnet`
         * detailed architecture description
         * using pretrained model
     * `stages`: you can configure training or inference in several stages with different hyperparameters. In our example:

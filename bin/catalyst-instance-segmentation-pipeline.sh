@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-#title           :catalyst-semantic-segmentation-pipeline
-#description     :catalyst.dl script for semantic segmentation pipeline run
+#title           :catalyst-instance-segmentation-pipeline
+#description     :catalyst.dl script for instance segmentation pipeline run
 #author          :Sergey Kolesnikov, Yauheni Kachan
 #author_email    :scitator@gmail.com, yauheni.kachan@gmail.com
-#date            :20191016
+#date            :20191109
 #version         :20.03
 #==============================================================================
 
@@ -27,11 +27,11 @@ Example:
   CUDA_VISIBLE_DEVICES=0 \\
   CUDNN_BENCHMARK="True" \\
   CUDNN_DETERMINISTIC="True" \\
-  ./bin/catalyst-semantic-segmentation-pipeline.sh \\
+  ./bin/catalyst-instance-segmentation-pipeline.sh \\
     --workdir ./logs \\
     --datadir ./data/origin \\
     --max-image-size 256 \\
-    --config-template ./configs/templates/semantic.yml \\
+    --config-template ./configs/templates/instance.yml \\
     --num-workers 4 \\
     --batch-size 256
 USAGE
@@ -44,7 +44,7 @@ USAGE
 NUM_WORKERS=${NUM_WORKERS:=4}
 BATCH_SIZE=${BATCH_SIZE:=64}
 MAX_IMAGE_SIZE=${MAX_IMAGE_SIZE:=256}
-CONFIG_TEMPLATE=${CONFIG_TEMPLATE:="./configs/templates/semantic.yml"}
+CONFIG_TEMPLATE=${CONFIG_TEMPLATE:="./configs/templates/instance.yml"}
 DATADIR=${DATADIR:="./data/origin"}
 WORKDIR=${WORKDIR:="./logs"}
 SKIPDATA=""
@@ -107,15 +107,10 @@ done
 if [[ -z "${SKIPDATA}" ]]; then
   cp -R ${DATADIR}/* ${DATASET_DIR}/
 
-  python scripts/index2color.py \
-    --in-dir ${RAW_MASKS_DIR} \
-    --out-labeling ${DATASET_DIR}/index2color.json \
-    --num-workers ${NUM_WORKERS}
-
-  python scripts/process_semantic_masks.py \
+  mkdir -p ${DATASET_DIR}/masks
+  python scripts/process_instance_masks.py \
     --in-dir ${RAW_MASKS_DIR} \
     --out-dir ${DATASET_DIR}/masks \
-    --index2color ${DATASET_DIR}/index2color.json \
     --num-workers ${NUM_WORKERS}
 
   python scripts/image2mask.py \
@@ -131,19 +126,12 @@ fi
 
 # ---- config preparation
 
-NUM_CLASSES=$(python << EOF
-from safitty import Safict
-index2color = Safict.load("${DATASET_DIR}/index2color.json")
-print(len(index2color))
-EOF
-)
-
 python ./scripts/prepare_config.py \
   --in-template=${CONFIG_TEMPLATE} \
   --out-config=${CONFIG_DIR}/config.yml \
   --expdir=./src \
   --dataset-path=${DATASET_DIR} \
-  --num-classes=${NUM_CLASSES} \
+  --num-classes=2 \
   --num-workers=${NUM_WORKERS} \
   --batch-size=${BATCH_SIZE} \
   --max-image-size=${MAX_IMAGE_SIZE}
@@ -154,5 +142,5 @@ cp -r ./configs/_common.yml ${CONFIG_DIR}/_common.yml
 # ---- model training
 
 catalyst-dl run \
-  -C ${CONFIG_DIR}/_common.yml ${CONFIG_DIR}/config.yml \
-  --logdir ${LOGDIR} ${_run_args}
+    -C ${CONFIG_DIR}/_common.yml ${CONFIG_DIR}/config.yml \
+    --logdir ${LOGDIR} ${_run_args}

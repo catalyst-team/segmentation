@@ -1,4 +1,12 @@
 # flake8: noqa
 
-from .io import OriginalImageSaverCallback, OverlayMaskImageSaverCallback
-from .processing import RawMaskPostprocessingCallback
+from .io import (
+    InstanceCropSaverCallback,
+    OriginalImageSaverCallback,
+    OverlayMaskImageSaverCallback,
+)
+from .metrics import SegmentationMeanAPCallback
+from .processing import (
+    InstanceMaskPostprocessingCallback,
+    RawMaskPostprocessingCallback,
+)

@@ -1,7 +1,7 @@
 .PHONY: check-style codestyle docker-build clean
 
 check-style:
-	bash ./bin/_check_codestyle.sh -s
+	bash ./bin/codestyle/check_codestyle.sh -s
 
 codestyle:
 	pre-commit run
