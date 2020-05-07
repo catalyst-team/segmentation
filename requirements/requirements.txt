@@ -1,4 +1,4 @@
-catalyst[cv]==20.4
+catalyst[cv]==20.5
 jinja2
 opencv-python>=4.1.1
 pandas>=0.22
