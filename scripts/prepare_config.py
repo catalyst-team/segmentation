@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # usage:
 # python scripts/prepare_config.py \
 #     --in-template=./configs/templates/binary.yml \
@@ -17,6 +16,7 @@ from jinja2 import Environment, FileSystemLoader
 
 
 def build_args(parser):
+    """Constructs the command-line arguments for ``prepare_config``."""
     parser.add_argument("--in-template", type=Path, required=True)
     parser.add_argument("--out-config", type=Path, required=True)
     parser.add_argument("--expdir", type=Path, required=True)
@@ -31,6 +31,7 @@ def build_args(parser):
 
 
 def parse_args():
+    """Parses the command line arguments for the main method."""
     parser = argparse.ArgumentParser()
     build_args(parser)
     args = parser.parse_args()
@@ -47,15 +48,15 @@ def render_config(
     batch_size: int,
     max_image_size: int,
 ):
-    _template_path = in_template.absolute().parent
-
-    _env = Environment(
-        loader=FileSystemLoader([str(_template_path)]),
+    """Render catalyst config with specified parameters."""
+    template_path = str(in_template.absolute().parent)
+    env = Environment(
+        loader=FileSystemLoader([template_path]),
         trim_blocks=True,
         lstrip_blocks=True,
     )
 
-    template = _env.get_template(in_template.name)
+    template = env.get_template(in_template.name)
 
     if num_classes is None:
         with (dataset_path / "index2color.json").open() as f:
@@ -76,6 +77,7 @@ def render_config(
 
 
 def main(args, _=None):
+    """Run the ``prepare_config`` script."""
     args = args.__dict__
     render_config(**args)
 
