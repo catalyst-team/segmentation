@@ -21,7 +21,7 @@ class RawMaskPostprocessingCallback(Callback):
             input_key (str): input key to use for masks extraction
             output_key (str): key to use to store the result
         """
-        super().__init__(order=CallbackOrder.Internal, node=CallbackNode.all)
+        super().__init__(order=CallbackOrder.Internal, node=CallbackNode.All)
         self.threshold = threshold
         self.input_key = input_key
         self.output_key = output_key

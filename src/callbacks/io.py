@@ -32,7 +32,7 @@ class OriginalImageSaverCallback(Callback):
             input_key (str): key to use to get images
             outpath_key (str): key to use to get images names
         """
-        super().__init__(order=CallbackOrder.logging, node=CallbackNode.master)
+        super().__init__(order=CallbackOrder.logging, node=CallbackNode.Master)
         self.output_dir = Path(output_dir)
         self.relative = relative
         self.suffix = filename_suffix
