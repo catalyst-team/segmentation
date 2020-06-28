@@ -9,6 +9,7 @@ from catalyst.contrib.utils import has_image_extension
 
 
 def build_args(parser):
+    """Constructs the command-line arguments for ``image2mask``."""
     parser.add_argument(
         "--in-dir",
         required=True,
@@ -26,6 +27,7 @@ def build_args(parser):
 
 
 def parse_args():
+    """Parses the command line arguments for the main method."""
     parser = argparse.ArgumentParser()
     build_args(parser)
     args = parser.parse_args()
@@ -33,18 +35,23 @@ def parse_args():
 
 
 def main(args, _=None):
-    """
+    """Run the ``image2mask`` script. # noqa: RST202, RST214, RST215, RST299
 
-    in_dir
-    |-- images
-    |   |-- sample_1
-    |   ..
-    |   `-- sample_N
-    `-- masks
-        |-- sample_1.tiff  # image of shape HxWxM
-        ..
-        `-- sample_N.tiff  # image of shape HxWxK
-
+    Args:
+        args: CLI args:
+            * `in-dir`: Path to dataset, `in-dir` folder structure:
+            ```
+                in_dir
+                |-- images
+                |   |-- sample_1
+                |   ..
+                |   `-- sample_N
+                `-- masks
+                    |-- sample_1.tiff  # image of shape HxWxM
+                    ..
+                    `-- sample_N.tiff  # image of shape HxWxK
+            ```
+            * `out-dataset`: Path to output dataframe.
     """
     samples = collections.defaultdict(dict)
     for key in ("images", "masks"):

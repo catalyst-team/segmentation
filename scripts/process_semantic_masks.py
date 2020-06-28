@@ -15,6 +15,7 @@ from catalyst.contrib.utils import (
 
 
 def build_args(parser):
+    """Constructs the command-line arguments for ``process_semantic_masks``."""
     parser.add_argument(
         "--in-dir", required=True, type=Path, help="Raw masks folder path"
     )
@@ -36,6 +37,7 @@ def build_args(parser):
 
 
 def parse_args():
+    """Parses the command line arguments for the main method."""
     parser = argparse.ArgumentParser()
     build_args(parser)
     args = parser.parse_args()
@@ -43,7 +45,17 @@ def parse_args():
 
 
 class Preprocessor:
+    """Multi-thread mask pre-processor."""
+
     def __init__(self, in_dir: Path, out_dir: Path, index2color: Path):
+        """Constructor method for the :class:`Preprocessor` class.
+
+        Args:
+            in_dir (Path): path to folder with input masks
+            out_dir (Path): path to folder to store processed masks
+            index2color (Path): path to file with mapping from mask index
+                to mask color, look at COCO dataset for details
+        """
         self.in_dir = in_dir
         self.out_dir = out_dir
 
@@ -52,7 +64,12 @@ class Preprocessor:
             int(key): tuple(value) for key, value in index2color.items()
         }
 
-    def preprocess(self, image_path: Path):
+    def preprocess(self, image_path: Path) -> None:
+        """Process single mask.
+
+        Args:
+            image_path (Path): path to the mask
+        """
         image = imread(image_path, rootpath=str(self.in_dir))
         heigth, width = image.shape[:2]
 
@@ -68,6 +85,7 @@ class Preprocessor:
         )
 
     def process_all(self, pool: Pool):
+        """Process all masks."""
         images = [
             filename
             for filename in self.in_dir.iterdir()
@@ -77,6 +95,7 @@ class Preprocessor:
 
 
 def main(args, _=None):
+    """Run the ``process_semantic_masks`` script."""
     args = args.__dict__
     args.pop("command", None)
     num_workers = args.pop("num_workers")

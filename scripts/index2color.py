@@ -11,6 +11,7 @@ from catalyst.contrib.utils import get_pool, imread, tqdm_parallel_imap
 
 
 def build_args(parser):
+    """Constructs the command-line arguments for ``index2color``."""
     parser.add_argument(
         "--in-dir",
         required=True,
@@ -31,6 +32,7 @@ def build_args(parser):
 
 
 def parse_args():
+    """Parses the command line arguments for the main method."""
     parser = argparse.ArgumentParser()
     build_args(parser)
     args = parser.parse_args()
@@ -38,6 +40,14 @@ def parse_args():
 
 
 def colors_in_image(uri) -> Set:
+    """Returns set of colors that appears in the image.
+
+    Args:
+        uri: path to the image
+
+    Returns:
+        Set: colors that appears in the image
+    """
     image = imread(uri, rootpath=args.in_dir)
     colors = np.unique(image.reshape(-1, image.shape[-1]), axis=0)
     result = {tuple(row) for row in colors.tolist()}  # np.array to hashable
@@ -45,6 +55,7 @@ def colors_in_image(uri) -> Set:
 
 
 def main(args, _=None):
+    """Run the ``index2color`` script."""
     with get_pool(args.num_workers) as pool:
         images = os.listdir(args.in_dir)
         colors = tqdm_parallel_imap(colors_in_image, images, pool)
