@@ -1,0 +1,26 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/requirements"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
+  allow:
+  - dependency-name: catalyst
+  ignore:
+  - dependency-name: catalyst[cv]
+    versions:
+    - "20.12"
+    - "21.3"
+    - 21.3.1
+    - 21.3.2
+    - "21.4"
+- package-ecosystem: docker
+  directory: "/docker"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  labels:
+  - dependencies
